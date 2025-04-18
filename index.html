@@ -3,148 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soykun Log Getir</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/css/bootstrap.min.css">
+    <title>NiggaServis 3.7 - WebLog Sorgulama</title>
+    
+    <!-- CSS Dependencies -->
+    <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
+
     <style>
         body {
-            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #2b1055 0%, #4a3b8a 100%);
+            min-height: 100vh;
+            color: #fff;
+            font-family: 'Ubuntu', sans-serif;
         }
-        .dark-theme {
-            background-color: #121212;
-            color: #ffffff;
+
+        .custom-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        .light-theme {
-            background-color: #ffffff;
-            color: #000000;
+
+        .btn-nigga {
+            background: #6a4c93;
+            color: white;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
         }
-        .theme-toggle-btn {
-            cursor: pointer;
-            margin-top: 10px;
-            font-size: 18px;
+
+        .btn-nigga:hover {
+            background: #8b6db0;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(106, 76, 147, 0.4);
         }
-        table {
-            margin-top: 20px;
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            left: 50%;
+            margin: -8px 0 0 -8px;
+            border: 3px solid #fff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
         }
-        .container {
-            margin-top: 20px;
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
-        .search-container {
-            margin-bottom: 20px;
+
+        table.dataTable {
+            color: white !important;
         }
-        #searchInput {
-            width: 80%;
-            padding: 10px;
-        }
-        #searchButton {
-            padding: 10px;
+
+        .dataTables_wrapper .dataTables_filter input {
+            color: white !important;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1 class="text-center">Soykun Log Getir</h1>
-    
-    <!-- Tema Değişim Butonu -->
-    <button class="btn btn-secondary theme-toggle-btn" id="themeToggleBtn">
-        <i class="fas fa-adjust"></i> Tema Değiştir
-    </button>
+<div class="container py-5">
+    <div class="custom-card p-4 mb-4">
+        <h1 class="text-center mb-4">
+            <img src="https://img.icons8.com/fluency/48/cloudflare.png" alt="logo">
+            NiggaServis 3.7
+        </h1>
+        
+        <div class="input-group mb-3">
+            <input type="text" 
+                   id="apiUrl" 
+                   class="form-control" 
+                   placeholder="API URL'yi buraya yapıştırın..."
+                   value="https://niggaservis.niggass.workers.dev/api/log?q=">
+            <button class="btn btn-nigga" 
+                    type="button" 
+                    id="btnSorgula">
+                Sorgula 🔍
+            </button>
+        </div>
 
-    <!-- Arama Alanı -->
-    <div class="search-container text-center">
-        <input type="text" id="searchInput" class="form-control" placeholder="URL veya Kullanıcı Adı ile Ara">
-        <button id="searchButton" class="btn btn-primary">Ara</button>
-    </div>
-
-    <!-- Tablo -->
-    <div class="table-responsive">
-        <table id="logTable" class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>URL</th>
-                    <th>Kullanıcı Adı</th>
-                    <th>Şifre</th>
-                </tr>
-            </thead>
-            <tbody id="logData">
-                <!-- Veri buraya yüklenecek -->
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table id="resultTable" class="table table-hover table-borderless w-100">
+                <thead>
+                    <tr>
+                        <th>URL</th>
+                        <th>Kullanıcı Adı</th>
+                        <th>Şifre</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/3.0.1/js.cookie.min.js"></script>
+<!-- JS Dependencies -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-    // Sayfa yüklendiğinde tema ayarını kontrol et
-    $(document).ready(function() {
-        const currentTheme = Cookies.get('theme');
-        if (currentTheme === 'dark') {
-            $('body').addClass('dark-theme');
-        } else {
-            $('body').addClass('light-theme');
-        }
+$(document).ready(function() {
+    let dataTable = null;
 
-        // Tema değişim butonuna tıklandığında tema değiştir
-        $('#themeToggleBtn').on('click', function() {
-            if ($('body').hasClass('dark-theme')) {
-                $('body').removeClass('dark-theme').addClass('light-theme');
-                Cookies.set('theme', 'light', { expires: 7 });
-            } else {
-                $('body').removeClass('light-theme').addClass('dark-theme');
-                Cookies.set('theme', 'dark', { expires: 7 });
-            }
-        });
+    $('#btnSorgula').click(async function() {
+        const $btn = $(this);
+        const apiUrl = $('#apiUrl').val();
 
-        // API'den veri çek ve tabloyu doldur
-        function loadLogs(query = '') {
-            $.ajax({
-                url: `https://niggaservis.niggass.workers.dev/api/log${query ? '?q=' + query : ''}`,
-                method: 'GET',
-                success: function(response) {
-                    if (response.basarili) {
-                        const logs = response.veri;
-                        let logRows = '';
-                        logs.forEach(log => {
-                            logRows += `
-                                <tr>
-                                    <td><a href="${log.Url}" target="_blank">${log.Url}</a></td>
-                                    <td>${log.KullaniciAdi}</td>
-                                    <td>${log.Sifre}</td>
-                                </tr>
-                            `;
-                        });
-                        $('#logData').html(logRows);
-                        $('#logTable').DataTable();
-                    } else {
-                        alert('Veri çekme başarısız oldu.');
-                    }
-                },
-                error: function() {
-                    alert('API isteği sırasında bir hata oluştu.');
+        try {
+            $btn.addClass('btn-loading').prop('disabled', true);
+            
+            const response = await fetch(apiUrl);
+            const { basarili, veri, servis } = await response.json();
+
+            if (basarili && veri) {
+                if (dataTable) {
+                    dataTable.destroy();
+                    $('#resultTable tbody').empty();
                 }
-            });
-        }
 
-        // İlk verileri yükle
-        loadLogs();
+                const processedData = veri.map(item => [
+                    item.Url || 'N/A',
+                    item.KullaniciAdi || 'N/A',
+                    item.Sifre || 'N/A'
+                ]);
 
-        // Arama butonuna tıklandığında veriyi ara
-        $('#searchButton').on('click', function() {
-            const query = $('#searchInput').val();
-            loadLogs(query);
-        });
-        
-        // Enter tuşu ile de arama yapılabilmesi için
-        $('#searchInput').on('keypress', function(e) {
-            if (e.which === 13) {
-                $('#searchButton').click();
+                dataTable = $('#resultTable').DataTable({
+                    data: processedData,
+                    columns: [
+                        { title: 'URL' },
+                        { title: 'Kullanıcı Adı' },
+                        { title: 'Şifre' }
+                    ],
+                    responsive: true,
+                    language: {
+                        url: '//cdn.datatables.net/plug-ins/2.1.5/i18n/tr.json'
+                    }
+                });
             }
-        });
+        } catch (error) {
+            console.error('Sorgulama hatası:', error);
+            alert('Sorgulama sırasında bir hata oluştu!');
+        } finally {
+            $btn.removeClass('btn-loading').prop('disabled', false);
+        }
     });
+});
 </script>
 
 </body>
