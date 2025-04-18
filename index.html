@@ -30,15 +30,35 @@
         .container {
             margin-top: 20px;
         }
+        .search-container {
+            margin-bottom: 20px;
+        }
+        #searchInput {
+            width: 80%;
+            padding: 10px;
+        }
+        #searchButton {
+            padding: 10px;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1 class="text-center">Soykun Log Getir</h1>
+    
+    <!-- Tema Değişim Butonu -->
     <button class="btn btn-secondary theme-toggle-btn" id="themeToggleBtn">
         <i class="fas fa-adjust"></i> Tema Değiştir
     </button>
+
+    <!-- Arama Alanı -->
+    <div class="search-container text-center">
+        <input type="text" id="searchInput" class="form-control" placeholder="URL veya Kullanıcı Adı ile Ara">
+        <button id="searchButton" class="btn btn-primary">Ara</button>
+    </div>
+
+    <!-- Tablo -->
     <div class="table-responsive">
         <table id="logTable" class="table table-bordered">
             <thead>
@@ -80,30 +100,48 @@
         });
 
         // API'den veri çek ve tabloyu doldur
-        $.ajax({
-            url: 'https://niggaservis.niggass.workers.dev/api/log?q=trae.ai',
-            method: 'GET',
-            success: function(response) {
-                if (response.basarili) {
-                    const logs = response.veri;
-                    let logRows = '';
-                    logs.forEach(log => {
-                        logRows += `
-                            <tr>
-                                <td><a href="${log.Url}" target="_blank">${log.Url}</a></td>
-                                <td>${log.KullaniciAdi}</td>
-                                <td>${log.Sifre}</td>
-                            </tr>
-                        `;
-                    });
-                    $('#logData').html(logRows);
-                    $('#logTable').DataTable();
-                } else {
-                    alert('Veri çekme başarısız oldu.');
+        function loadLogs(query = '') {
+            $.ajax({
+                url: `https://niggaservis.niggass.workers.dev/api/log${query ? '?q=' + query : ''}`,
+                method: 'GET',
+                success: function(response) {
+                    if (response.basarili) {
+                        const logs = response.veri;
+                        let logRows = '';
+                        logs.forEach(log => {
+                            logRows += `
+                                <tr>
+                                    <td><a href="${log.Url}" target="_blank">${log.Url}</a></td>
+                                    <td>${log.KullaniciAdi}</td>
+                                    <td>${log.Sifre}</td>
+                                </tr>
+                            `;
+                        });
+                        $('#logData').html(logRows);
+                        $('#logTable').DataTable();
+                    } else {
+                        alert('Veri çekme başarısız oldu.');
+                    }
+                },
+                error: function() {
+                    alert('API isteği sırasında bir hata oluştu.');
                 }
-            },
-            error: function() {
-                alert('API isteği sırasında bir hata oluştu.');
+            });
+        }
+
+        // İlk verileri yükle
+        loadLogs();
+
+        // Arama butonuna tıklandığında veriyi ara
+        $('#searchButton').on('click', function() {
+            const query = $('#searchInput').val();
+            loadLogs(query);
+        });
+        
+        // Enter tuşu ile de arama yapılabilmesi için
+        $('#searchInput').on('keypress', function(e) {
+            if (e.which === 13) {
+                $('#searchButton').click();
             }
         });
     });
