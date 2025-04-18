@@ -185,25 +185,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
-<script>
-$(document).ready(function() {
-    $('#resultTable').DataTable({
-        dom: '<"dt-top"fB>rt<"dt-bottom"lip>',
-        buttons: [
-            { extend: 'csv', text: 'CSV İndir' },
-            { extend: 'excel', text: 'Excel İndir' },
-            { extend: 'pdf', text: 'PDF İndir' }
-        ],
-        language: {
-            url: '//cdn.datatables.net/plug-ins/2.1.5/i18n/tr.json',
-            buttons: {
-                csv: 'CSV Olarak İndir',
-                excel: 'Excel Olarak İndir',
-                pdf: 'PDF Olarak İndir'
-            }
-        }
-    });
-});
 </script>
+
 </body>
 </html>
