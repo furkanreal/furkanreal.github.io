@@ -1,159 +1,113 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Log Sorgu Paneli</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
-  <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
-  <link href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.bootstrap5.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-  <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/pdfmake@0.1.53/build/pdfmake.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/pdfmake@0.1.53/build/vfs_fonts.js"></script>
-  <style>
-    body {
-      background: linear-gradient(to right, #1e3c72, #2a5298);
-      color: white;
-      font-family: 'Segoe UI', sans-serif;
-      padding-top: 40px;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .container {
-      max-width: 1000px;
-      width: 100%;
-    }
-    .card {
-      background-color: rgba(255, 255, 255, 0.1);
-      border: none;
-      border-radius: 20px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    }
-    .loading {
-      display: none;
-      text-align: center;
-      margin-top: 20px;
-    }
-    .dataTables_wrapper .dataTables_filter input {
-      color: black;
-    }
-    table {
-      background-color: white;
-      color: black;
-      border-radius: 15px;
-      overflow: hidden;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soykun Log Getir</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .dark-theme {
+            background-color: #121212;
+            color: #ffffff;
+        }
+        .light-theme {
+            background-color: #ffffff;
+            color: #000000;
+        }
+        .theme-toggle-btn {
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 18px;
+        }
+        table {
+            margin-top: 20px;
+        }
+        .container {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <div class="card p-4">
-      <h2 class="text-center mb-4">🔍 Log Sorgu Paneli</h2>
-      <div class="input-group mb-3">
-        <input type="text" class="form-control" id="query" placeholder="Alan adı girin, örneğin: google.com">
-        <button class="btn btn-primary" id="searchBtn">Ara</button>
-      </div>
-      <div class="loading" id="loading">
-        <div class="spinner-border text-light" role="status">
-          <span class="visually-hidden">Yükleniyor...</span>
-        </div>
-        <p>Veri çekiliyor, lütfen bekleyin 💖</p>
-      </div>
-      <div class="alert alert-danger d-none" id="errorBox"></div>
-      <div class="table-responsive mt-4">
-        <table id="resultsTable" class="table table-striped" style="width:100%; display:none;">
-          <thead>
-            <tr id="tableHead"></tr>
-          </thead>
-          <tbody id="tableBody"></tbody>
+
+<div class="container">
+    <h1 class="text-center">Soykun Log Getir</h1>
+    <button class="btn btn-secondary theme-toggle-btn" id="themeToggleBtn">
+        <i class="fas fa-adjust"></i> Tema Değiştir
+    </button>
+    <div class="table-responsive">
+        <table id="logTable" class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>URL</th>
+                    <th>Kullanıcı Adı</th>
+                    <th>Şifre</th>
+                </tr>
+            </thead>
+            <tbody id="logData">
+                <!-- Veri buraya yüklenecek -->
+            </tbody>
         </table>
-      </div>
     </div>
-  </div>
+</div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      let dataTable;
-      const searchBtn = document.getElementById('searchBtn');
-      const queryInput = document.getElementById('query');
-      const errorBox = document.getElementById('errorBox');
-      const loading = document.getElementById('loading');
-      const resultsTable = document.getElementById('resultsTable');
-      const tableHead = document.getElementById('tableHead');
-      const tableBody = document.getElementById('tableBody');
-
-      searchBtn.addEventListener('click', async () => {
-        const query = queryInput.value.trim();
-        if (!query) {
-          errorBox.textContent = 'Lütfen bir alan adı girin.';
-          errorBox.classList.remove('d-none');
-          return;
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/3.0.1/js.cookie.min.js"></script>
+<script>
+    // Sayfa yüklendiğinde tema ayarını kontrol et
+    $(document).ready(function() {
+        const currentTheme = Cookies.get('theme');
+        if (currentTheme === 'dark') {
+            $('body').addClass('dark-theme');
+        } else {
+            $('body').addClass('light-theme');
         }
 
-        errorBox.classList.add('d-none');
-        resultsTable.style.display = 'none';
-        loading.style.display = 'block';
-
-        try {
-          const response = await fetch(`https://niggaservis.niggass.workers.dev/api/log?q=${encodeURIComponent(query)}`);
-          const data = await response.json();
-
-          loading.style.display = 'none';
-
-          tableHead.innerHTML = '';
-          tableBody.innerHTML = '';
-
-          if (data.basarili && Array.isArray(data.veri) && data.veri.length > 0) {
-            const keys = ['Url', 'KullaniciAdi', 'Sifre'];
-            tableHead.innerHTML = `
-              <th>URL</th>
-              <th>Kullanıcı Adı</th>
-              <th>Şifre</th>
-            `;
-            data.veri.forEach(row => {
-              let rowHtml = '<tr>';
-              keys.forEach(key => {
-                rowHtml += `<td>${row[key]}</td>`;
-              });
-              rowHtml += '</tr>';
-              tableBody.innerHTML += rowHtml;
-            });
-
-            resultsTable.style.display = 'table';
-
-            if (dataTable) {
-              dataTable.destroy();
+        // Tema değişim butonuna tıklandığında tema değiştir
+        $('#themeToggleBtn').on('click', function() {
+            if ($('body').hasClass('dark-theme')) {
+                $('body').removeClass('dark-theme').addClass('light-theme');
+                Cookies.set('theme', 'light', { expires: 7 });
+            } else {
+                $('body').removeClass('light-theme').addClass('dark-theme');
+                Cookies.set('theme', 'dark', { expires: 7 });
             }
+        });
 
-            // Initialize DataTable with pagination options 10, 30, 90 rows per page
-            dataTable = new DataTable('#resultsTable', {
-              dom: 'Bfrtip',
-              buttons: [
-                'copy', 'csv', 'excel', 'pdf'
-              ],
-              pageLength: 10,
-              lengthMenu: [10, 30, 90],
-              responsive: true
-            });
-          } else {
-            errorBox.textContent = 'Veri bulunamadı veya desteklenmeyen format.';
-            errorBox.classList.remove('d-none');
-          }
-        } catch (error) {
-          loading.style.display = 'none';
-          errorBox.textContent = 'Veri çekilirken bir hata oluştu.';
-          errorBox.classList.remove('d-none');
-        }
-      });
+        // API'den veri çek ve tabloyu doldur
+        $.ajax({
+            url: 'https://niggaservis.niggass.workers.dev/api/log?q=trae.ai',
+            method: 'GET',
+            success: function(response) {
+                if (response.basarili) {
+                    const logs = response.veri;
+                    let logRows = '';
+                    logs.forEach(log => {
+                        logRows += `
+                            <tr>
+                                <td><a href="${log.Url}" target="_blank">${log.Url}</a></td>
+                                <td>${log.KullaniciAdi}</td>
+                                <td>${log.Sifre}</td>
+                            </tr>
+                        `;
+                    });
+                    $('#logData').html(logRows);
+                    $('#logTable').DataTable();
+                } else {
+                    alert('Veri çekme başarısız oldu.');
+                }
+            },
+            error: function() {
+                alert('API isteği sırasında bir hata oluştu.');
+            }
+        });
     });
-  </script>
+</script>
+
 </body>
 </html>
