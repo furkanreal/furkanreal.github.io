@@ -11,115 +11,118 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --dark-bg: #030419;
+            --bg-dark-space: #020314;
             --accent-primary: #00A9FF;
             --accent-secondary: #A600FF;
-            --card-bg: rgba(18, 16, 38, 0.7);
-            --border-color: rgba(255, 255, 255, 0.1);
+            --panel-bg: rgba(18, 17, 39, 0.6);
+            --panel-border: rgba(58, 52, 102, 0.5);
             --text-primary: #e2e8f0;
-            --text-secondary: #94a3b8;
+            --text-secondary: #8c9bb3;
+            --text-dark: #0f172a;
         }
 
         body {
-            background-color: var(--dark-bg);
+            background-color: var(--bg-dark-space);
             color: var(--text-primary);
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
             position: relative;
         }
 
-        .light-mode {
-            --dark-bg: #f1f5f9;
-            --card-bg: rgba(255, 255, 255, 0.7);
-            --border-color: rgba(0, 0, 0, 0.1);
-            --text-primary: #0f172a;
-            --text-secondary: #475569;
-        }
-
         #background-container {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1; overflow: hidden;
+            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
         }
 
-        .stars {
-            position: absolute; top: 0; left: 0;
-            width: 100%; height: 100%;
-            background-repeat: repeat;
-            background-size: cover;
-        }
+        .stars { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-repeat: repeat; background-size: cover; opacity: 0.7; }
+        #stars1 { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><circle cx="15%" cy="20%" r="1" fill="white" opacity="0.8"/><circle cx="80%" cy="10%" r="1" fill="white" opacity="0.8"/><circle cx="50%" cy="70%" r="1" fill="white" opacity="0.8"/></svg>'); animation: move-stars 180s linear infinite; }
+        #stars2 { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><circle cx="30%" cy="50%" r="0.8" fill="white" opacity="0.6"/><circle cx="90%" cy="60%" r="0.8" fill="white" opacity="0.6"/><circle cx="40%" cy="90%" r="0.8" fill="white" opacity="0.6"/></svg>'); animation: move-stars 120s linear infinite; }
+        #stars3 { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><circle cx="5%" cy="80%" r="0.6" fill="white" opacity="0.4"/><circle cx="60%" cy="30%" r="0.6" fill="white" opacity="0.4"/></svg>'); animation: move-stars 90s linear infinite; }
+
+        @keyframes move-stars { from { transform: translateY(0); } to { transform: translateY(-100vh); } }
         
-        #stars1 { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><circle cx="15%" cy="20%" r="1" fill="white"/><circle cx="80%" cy="10%" r="1" fill="white"/><circle cx="50%" cy="70%" r="1" fill="white"/></svg>'); animation: move-stars 150s linear infinite; }
-        #stars2 { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><circle cx="30%" cy="50%" r="1" fill="white" opacity="0.8"/><circle cx="90%" cy="60%" r="1" fill="white" opacity="0.8"/><circle cx="40%" cy="90%" r="1" fill="white" opacity="0.8"/></svg>'); animation: move-stars 100s linear infinite; }
-        #stars3 { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><circle cx="5%" cy="80%" r="1" fill="white" opacity="0.6"/><circle cx="60%" cy="30%" r="1" fill="white" opacity="0.6"/></svg>'); animation: move-stars 75s linear infinite; }
-
-        @keyframes move-stars {
-            from { transform: translateY(0); }
-            to { transform: translateY(-100vh); }
-        }
-
         .navbar {
-            background: rgba(3, 4, 25, 0.5);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--border-color);
-            transition: background 0.3s ease;
+            background: rgba(2, 3, 20, 0.4);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--panel-border);
         }
 
-        .light-mode .navbar { background: rgba(241, 245, 249, 0.5); }
         .navbar-brand { font-weight: 900; font-size: 1.6rem; color: var(--text-primary); }
         .navbar-brand span { color: var(--accent-primary); font-weight: 600; }
 
-        .hero-section { text-align: center; padding: min(25vh, 10rem) 1rem 8rem 1rem; }
-        .hero-section .display-3 { font-weight: 900; background: linear-gradient(90deg, #fff, #d1d1d1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1rem; animation: text-reveal 1.5s ease-out; }
-        .light-mode .hero-section .display-3 { background: linear-gradient(90deg, #2c3e50, #000); -webkit-background-clip: text; }
-        .hero-section .display-3 .highlight { background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary)); -webkit-background-clip: text; }
-        .lead { color: var(--text-secondary); max-width: 700px; margin: auto; font-weight: 400; animation: text-reveal 1.5s ease-out 0.2s backwards; }
-        @keyframes text-reveal { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .analysis-container { min-height: calc(100vh - 70px); display: flex; align-items: center; }
 
         .analysis-panel {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
+            width: 100%;
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
             border-radius: 1rem; padding: 2.5rem;
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            animation: panel-pop 1s ease-out 0.5s backwards;
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            animation: panel-pop 1s ease-out;
         }
-        @keyframes panel-pop { from { opacity: 0; transform: scale(0.95) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        @keyframes panel-pop { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        
+        .input-group-lg .form-control {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--panel-border);
+            color: var(--text-primary);
+            font-size: 1.1rem; border-radius: 0.5rem !important;
+            padding: 0.9rem 1.2rem;
+            box-shadow: none; transition: all 0.3s ease;
+        }
 
-        #searchQuery { background: rgba(0, 0, 0, 0.25); border: 1px solid var(--border-color); color: var(--text-primary); padding: 0.9rem 1.2rem; font-size: 1.1rem; border-radius: 0.5rem; transition: all 0.3s ease; }
-        .light-mode #searchQuery { background: rgba(0, 0, 0, 0.05); }
-        #searchQuery:focus { background: rgba(0, 0, 0, 0.1); border-color: var(--accent-primary); box-shadow: 0 0 20px rgba(0, 169, 255, 0.3); }
+        .input-group-lg .form-control:focus {
+            background: rgba(0, 0, 0, 0.2); border-color: var(--accent-primary);
+            box-shadow: 0 0 25px rgba(0, 169, 255, 0.3), inset 0 0 5px rgba(0, 169, 255, 0.2);
+        }
 
-        .btn-analyze { background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary), var(--accent-primary)); background-size: 300% 100%; color: #fff; font-weight: 600; padding: 0.9rem 2rem; border: none; border-radius: 0.5rem; transition: all 0.5s ease; position: relative; }
-        .btn-analyze:hover { background-position: 100% 0; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 169, 255, 0.2); }
+        .btn-analyze {
+            background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary), var(--accent-primary));
+            background-size: 250% 100%;
+            color: #fff; font-weight: 600; border: none;
+            border-radius: 0.5rem !important;
+            transition: all 0.5s ease;
+        }
+        
+        .btn-analyze:hover { background-position: 100% 0; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 169, 255, 0.25); }
         .btn-analyze.btn-loading { cursor: not-allowed; }
 
-        .results-container { margin-top: 2rem; display: none; }
+        .results-container { margin-top: 2.5rem; display: none; }
         
-        /* --- DataTables Flawless Integration --- */
-        .dataTables_wrapper { --bs-table-bg: transparent; --bs-table-striped-bg: rgba(255, 255, 255, 0.02); --bs-table-hover-bg: rgba(0, 169, 255, 0.08); color: var(--text-secondary); }
-        .light-mode .dataTables_wrapper { --bs-table-striped-bg: rgba(0, 0, 0, 0.03); --bs-table-hover-bg: rgba(0, 169, 255, 0.1); }
-        .dataTables_length > label, .dataTables_filter > label { font-weight: 500; }
-        .dataTables_filter input, .dataTables_length select { background-color: rgba(0,0,0,0.2) !important; color: var(--text-secondary) !important; border: 1px solid var(--border-color) !important; border-radius: 0.375rem; transition: all 0.3s ease; }
-        .light-mode .dataTables_filter input, .light-mode .dataTables_length select { background-color: rgba(0,0,0,0.05) !important; }
-        .dataTables_filter input:focus, .dataTables_length select:focus { border-color: var(--accent-primary) !important; box-shadow: 0 0 10px rgba(0, 169, 255, 0.2) !important; }
-        #resultTable thead th { border-bottom: 2px solid var(--border-color); color: var(--text-primary); }
-        .table-hover > tbody > tr:hover > * { color: var(--text-primary) !important; }
-        .page-item .page-link { background-color: transparent !important; border: 1px solid var(--border-color) !important; color: var(--text-secondary) !important; }
-        .page-item.active .page-link { background: var(--accent-primary) !important; border-color: var(--accent-primary) !important; color: #fff !important; }
-        .page-item:not(.active) .page-link:hover { background-color: rgba(0, 169, 255, 0.1) !important; }
+        /* --- DataTables & UI Kit Integration --- */
+        .dataTables_wrapper { --bs-table-bg: transparent; --bs-table-striped-bg: rgba(0, 169, 255, 0.03); --bs-table-hover-bg: rgba(0, 169, 255, 0.08); color: var(--text-secondary); font-size: 0.9rem; }
+        .dt-layout-row { padding: 0.5rem 0; }
+        .dataTables_filter input, .dataTables_length select {
+            background-color: rgba(0,0,0,0.2) !important; color: var(--text-secondary) !important;
+            border: 1px solid var(--panel-border) !important; border-radius: 0.375rem;
+            transition: all 0.3s ease; padding: 0.5rem 0.75rem;
+        }
+        .dataTables_filter input:focus, .dataTables_length select:focus {
+            border-color: var(--accent-primary) !important; box-shadow: 0 0 10px rgba(0, 169, 255, 0.2) !important;
+        }
+        #resultTable thead th { border-bottom: 2px solid var(--panel-border); color: var(--text-primary); font-weight: 600; }
+        #resultTable td { border-color: rgba(58, 52, 102, 0.3); vertical-align: middle; }
+        .table-hover > tbody > tr:hover > * { color: #fff !important; }
+        .page-item .page-link { background-color: transparent !important; border-color: var(--panel-border) !important; color: var(--text-secondary) !important; margin: 0 2px; border-radius: 0.375rem; }
+        .page-item.active .page-link { background: var(--accent-primary) !important; border-color: var(--accent-primary) !important; color: #fff !important; box-shadow: 0 0 10px rgba(0, 169, 255, 0.3); }
+        .page-item:not(.active) .page-link:hover { background-color: rgba(0, 169, 255, 0.1) !important; border-color: rgba(0, 169, 255, 0.3) !important; }
+        .dataTables_info { padding-top: 0.6rem !important; }
 
-        /* --- Toast Perfection --- */
-        .toast-container .toast { background: var(--card-bg) !important; border: 1px solid var(--border-color) !important; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-        .toast-header { background: linear-gradient(90deg, rgba(0, 169, 255, 0.2), rgba(166, 0, 255, 0.2)) !important; color: var(--text-primary) !important; border-bottom: 1px solid var(--border-color) !important; }
-        .light-mode .toast-header { border-bottom: 1px solid rgba(0,0,0,0.1) !important; }
-        .btn-close { filter: invert(1) brightness(2); }
-        .light-mode .btn-close { filter: none; }
-        
-        .theme-toggle { font-size: 1.5rem; cursor: pointer; background: none; border: none; color: var(--text-secondary); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .theme-toggle:hover { color: var(--accent-primary); }
-        .light-mode .theme-toggle { transform: rotate(180deg); }
+        .toast-container .toast {
+            background: rgba(10, 8, 30, 0.7) !important; border: 1px solid var(--panel-border) !important;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 0.75rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        .toast-header {
+            background: linear-gradient(90deg, rgba(0, 169, 255, 0.15), rgba(166, 0, 255, 0.15)) !important;
+            color: var(--text-primary) !important; border-bottom: 1px solid var(--panel-border) !important;
+        }
+        .btn-close { filter: invert(1) brightness(2) opacity(0.7); }
+
+        .theme-toggle { font-size: 1.5rem; cursor: pointer; background: none; border: none; color: var(--text-secondary); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .theme-toggle:hover { color: var(--accent-primary); transform: rotate(15deg); }
     </style>
 </head>
 <body>
@@ -129,33 +132,28 @@
         <div id="stars3" class="stars"></div>
     </div>
     
-    <nav class="navbar navbar-expand-lg fixed-top">
+    <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container">
             <a class="navbar-brand" href="#">WebLog<span>.NiggaServis</span></a>
-            <button class="theme-toggle" id="themeToggle">🌙</button>
+            <button class="theme-toggle" id="themeToggle" disabled>🌙</button>
         </div>
     </nav>
 
     <main class="container">
-        <section class="hero-section">
-            <h1 class="display-3">Veri Evreninde <br class="d-md-none"><span class="highlight">Anlam Yaratın</span></h1>
-            <p class="lead">Milyarlarca log satırı arasında saniyeler içinde arama yapın. Gelişmiş analiz altyapımızla, en karmaşık olayları bile kolayca aydınlatın.</p>
-        </section>
-
-        <section class="analysis-panel mb-5">
-            <div class="input-group">
-                <input type="text" id="searchQuery" class="form-control" placeholder="IP, kullanıcı, hata kodu veya herhangi bir anahtar kelime..." autocomplete="off">
-                <button class="btn btn-analyze" type="button" id="btnSorgula">
-                    <span class="btn-text">Analiz Et</span>
-                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                </button>
-            </div>
-            <div class="results-container" id="resultsContainer">
-                <div class="table-responsive">
+        <div class="analysis-container">
+            <div class="analysis-panel">
+                <div class="input-group input-group-lg">
+                    <input type="text" id="searchQuery" class="form-control" placeholder="Milyonlarca kayıt arasında arayın..." autocomplete="off">
+                    <button class="btn btn-analyze" type="button" id="btnSorgula">
+                        <span class="btn-text">Analiz Et</span>
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    </button>
+                </div>
+                <div class="results-container" id="resultsContainer">
                     <table id="resultTable" class="table table-hover table-striped w-100"></table>
                 </div>
             </div>
-        </section>
+        </div>
     </main>
 
     <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
@@ -166,7 +164,7 @@
             </div>
             <div class="toast-body">
                 <dl class="row gx-2 gy-1 mb-0 small">
-                    <dt class="col-6 text-secondary">Sunucu Platformu</dt><dd class="col-6 text-end fw-bold" id="serverInfo">-</dd>
+                    <dt class="col-6 text-secondary">Sunucu</dt><dd class="col-6 text-end fw-bold" id="serverInfo">-</dd>
                     <dt class="col-6 text-secondary">Taranan Veri</dt><dd class="col-6 text-end fw-bold" id="totalData">-</dd>
                     <dt class="col-6 text-secondary">Toplam Sonuç</dt><dd class="col-6 text-end fw-bold" id="totalResults">-</dd>
                     <dt class="col-6 text-secondary">Arama Süresi</dt><dd class="col-6 text-end fw-bold" id="searchTime">-</dd>
@@ -189,27 +187,13 @@
         const $resultsContainer = $("#resultsContainer");
         const toastEl = document.getElementById('resultToast');
         const resultToast = new bootstrap.Toast(toastEl);
-
-        const applyTheme = (theme) => {
-            const $body = $('body');
-            $body.css('transition', 'background-color 0.5s ease, color 0.5s ease');
-            if (theme === 'light') {
-                $body.addClass('light-mode');
-                $('#themeToggle').text('☀️');
-            } else {
-                $body.removeClass('light-mode');
-                $('#themeToggle').text('🌙');
-            }
-        }
         
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        applyTheme(savedTheme);
-
-        $('#themeToggle').click(function () {
-            const newTheme = $('body').hasClass('light-mode') ? 'dark' : 'light';
-            localStorage.setItem('theme', newTheme);
-            applyTheme(newTheme);
-        });
+        // Tema değiştirme fonksiyonu ve başlangıç ayarı devre dışı bırakıldı.
+        // Tema kalıcı olarak 'dark' modda. İstenirse tekrar aktif edilebilir.
+        // const applyTheme = (theme) => { ... }
+        // const savedTheme = 'dark';
+        // applyTheme(savedTheme);
+        // $('#themeToggle').click(function () { ... });
 
         const performSearch = async () => {
             const query = $searchQuery.val().trim();
@@ -236,31 +220,24 @@
                     resultToast.show();
 
                     if (dataTable) {
-                        dataTable.destroy();
-                        $('#resultTable').empty();
+                        dataTable.clear().rows.add(json.veriler.map(v => [v.icerik.log_mesaji || ""])).draw();
+                    } else {
+                        $resultsContainer.fadeIn(500);
+                        dataTable = $("#resultTable").DataTable({
+                            data: json.veriler.map(v => [v.icerik.log_mesaji || ""]),
+                            columns: [{ title: "Log Mesajı" }],
+                            responsive: true,
+                            language: { url: "//cdn.datatables.net/plug-ins/2.0.8/i18n/tr.json" },
+                            pageLength: 10,
+                            lengthMenu: [10, 25, 50, 100],
+                            stateSave: true,
+                        });
                     }
-                    
-                    const data = json.veriler.map(v => [v.icerik.log_mesaji || ""]);
-                    
-                    $resultsContainer.fadeIn(500);
-
-                    dataTable = $("#resultTable").DataTable({
-                        data: data,
-                        columns: [{ title: "Log Mesajı" }],
-                        responsive: true,
-                        language: { url: "//cdn.datatables.net/plug-ins/2.0.8/i18n/tr.json" },
-                        pageLength: 10,
-                        lengthMenu: [10, 25, 50, 100],
-                        stateSave: true,
-                        "initComplete": function( settings, json ) {
-                             $('html, body').animate({
-                                scrollTop: $resultsContainer.offset().top - 100
-                            }, 500);
-                        }
-                    });
                 } else {
                     alert(json.mesaj || "Arama kriterlerinize uygun sonuç bulunamadı.");
-                    $resultsContainer.fadeOut(300);
+                     if(dataTable) {
+                        dataTable.clear().draw();
+                     }
                 }
             } catch (error) {
                 console.error("Analiz Hatası:", error);
