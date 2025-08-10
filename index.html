@@ -3,257 +3,458 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WebLog.NiggaServis | Gelişmiş Analiz Platformu</title>
+    <meta name="description" content="NexusLog, milyonlarca log kaydı arasında anlık arama ve analiz yapmanızı sağlayan gelişmiş bir platformdur.">
+    <meta name="author" content="NexusLog">
+    
+    <title>NexusLog | Gelişmiş Log Analiz Platformu</title>
+
+    <!-- CDN Lİnks -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+
     <style>
+        /* --- Değişkenler ve Temel Kurulum --- */
         :root {
             --bg-dark-space: #020314;
             --accent-primary: #00A9FF;
             --accent-secondary: #A600FF;
-            --panel-bg: rgba(18, 17, 39, 0.6);
-            --panel-border: rgba(58, 52, 102, 0.5);
+            --accent-danger: #FF3B30;
+            --panel-bg: rgba(18, 17, 39, 0.5);
+            --panel-border: rgba(58, 52, 102, 0.4);
+            --panel-shadow: rgba(2, 3, 20, 0.5);
             --text-primary: #e2e8f0;
             --text-secondary: #8c9bb3;
             --text-dark: #0f172a;
+            --table-striped-bg: rgba(0, 169, 255, 0.03);
+            --table-hover-bg: rgba(0, 169, 255, 0.08);
         }
-code
-Code
-body {
-        background-color: var(--bg-dark-space);
-        color: var(--text-primary);
-        font-family: 'Inter', sans-serif;
-        overflow-x: hidden;
-        position: relative;
-    }
 
-    #background-container {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        z-index: -1; overflow: hidden;
-        background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
-    }
+        body[data-theme="light"] {
+            --bg-dark-space: #f0f2f5;
+            --panel-bg: rgba(255, 255, 255, 0.6);
+            --panel-border: rgba(200, 200, 220, 0.7);
+            --panel-shadow: rgba(100, 100, 120, 0.15);
+            --text-primary: #1c2a4e;
+            --text-secondary: #5a6b8c;
+            --table-striped-bg: rgba(0, 123, 255, 0.04);
+            --table-hover-bg: rgba(0, 123, 255, 0.09);
+        }
 
-    .stars { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-repeat: repeat; background-size: cover; opacity: 0.7; }
-    #stars1 { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><circle cx="15%" cy="20%" r="1" fill="white" opacity="0.8"/><circle cx="80%" cy="10%" r="1" fill="white" opacity="0.8"/><circle cx="50%" cy="70%" r="1" fill="white" opacity="0.8"/></svg>'); animation: move-stars 180s linear infinite; }
-    #stars2 { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><circle cx="30%" cy="50%" r="0.8" fill="white" opacity="0.6"/><circle cx="90%" cy="60%" r="0.8" fill="white" opacity="0.6"/><circle cx="40%" cy="90%" r="0.8" fill="white" opacity="0.6"/></svg>'); animation: move-stars 120s linear infinite; }
-    #stars3 { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><circle cx="5%" cy="80%" r="0.6" fill="white" opacity="0.4"/><circle cx="60%" cy="30%" r="0.6" fill="white" opacity="0.4"/></svg>'); animation: move-stars 90s linear infinite; }
+        body {
+            background-color: var(--bg-dark-space);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            position: relative;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
 
-    @keyframes move-stars { from { transform: translateY(0); } to { transform: translateY(-100vh); } }
-    
-    .navbar {
-        background: rgba(2, 3, 20, 0.4);
-        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-        border-bottom: 1px solid var(--panel-border);
-    }
+        /* --- Dinamik Arka Plan Efektleri --- */
+        #background-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -2; overflow: hidden;
+            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+        }
+        
+        body[data-theme="light"] #background-container {
+            background: #f0f2f5;
+        }
 
-    .navbar-brand { font-weight: 900; font-size: 1.6rem; color: var(--text-primary); }
-    .navbar-brand span { color: var(--accent-primary); font-weight: 600; }
+        #aurora-blob {
+            position: fixed;
+            width: 600px; height: 600px;
+            left: 50%; top: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+            filter: blur(180px);
+            opacity: 0.15;
+            z-index: -1;
+            transition: opacity 0.5s;
+            animation: move-blob 30s alternate infinite ease-in-out;
+        }
+        
+        body[data-theme="light"] #aurora-blob { opacity: 0.25; filter: blur(200px); }
 
-    .analysis-container { min-height: calc(100vh - 70px); display: flex; align-items: center; }
+        .stars { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-repeat: repeat; background-size: cover; opacity: 0; animation: fade-in 2s 0.5s forwards; }
+        body[data-theme="light"] .stars { display: none; }
+        #stars1 { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><circle cx="15%" cy="20%" r="1.2" fill="white" opacity="0.9"/><circle cx="80%" cy="10%" r="1" fill="white" opacity="0.8"/><circle cx="50%" cy="70%" r="1.1" fill="white" opacity="0.9"/></svg>'); animation: move-stars 240s linear infinite, fade-in 2s 0.5s forwards; }
+        #stars2 { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><circle cx="30%" cy="50%" r="0.8" fill="white" opacity="0.7"/><circle cx="90%" cy="60%" r="0.9" fill="white" opacity="0.7"/><circle cx="40%" cy="90%" r="0.8" fill="white" opacity="0.6"/></svg>'); animation: move-stars-slower 180s linear infinite, fade-in 2s 0.7s forwards; }
+        
+        @keyframes move-stars { from { transform: translateY(0); } to { transform: translateY(-100vh); } }
+        @keyframes move-stars-slower { from { transform: translateY(0); } to { transform: translateY(-50vh); } }
+        @keyframes move-blob {
+            0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+            50% { transform: translate(-40%, -60%) scale(1.2) rotate(180deg); }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(360deg); }
+        }
+        @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 
-    .analysis-panel {
-        width: 100%;
-        background: var(--panel-bg);
-        border: 1px solid var(--panel-border);
-        border-radius: 1rem; padding: 2.5rem;
-        backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
-        animation: panel-pop 1s ease-out;
-    }
-    @keyframes panel-pop { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-    
-    .input-group-lg .form-control {
-        background: rgba(0, 0, 0, 0.3);
-        border: 1px solid var(--panel-border);
-        color: var(--text-primary);
-        font-size: 1.1rem; border-radius: 0.5rem !important;
-        padding: 0.9rem 1.2rem;
-        box-shadow: none; transition: all 0.3s ease;
-    }
+        /* --- Header / Navbar --- */
+        .navbar {
+            background: rgba(2, 3, 20, 0.1);
+            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--panel-border);
+            transition: background 0.4s ease, border-bottom 0.4s ease;
+        }
+        body[data-theme="light"] .navbar { background: rgba(255, 255, 255, 0.5); }
+        .navbar-brand { font-weight: 900; font-size: 1.6rem; color: var(--text-primary); transition: color 0.4s ease; }
+        .navbar-brand .logo-icon { color: var(--accent-primary); margin-right: 8px; vertical-align: -2px;}
+        .navbar-brand span { color: var(--text-secondary); font-weight: 500; transition: color 0.4s ease; }
+        .theme-toggle { font-size: 1.5rem; cursor: pointer; background: none; border: none; color: var(--text-secondary); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .theme-toggle:hover { color: var(--accent-primary); transform: rotate(15deg) scale(1.1); }
 
-    .input-group-lg .form-control:focus {
-        background: rgba(0, 0, 0, 0.2); border-color: var(--accent-primary);
-        box-shadow: 0 0 25px rgba(0, 169, 255, 0.3), inset 0 0 5px rgba(0, 169, 255, 0.2);
-    }
+        /* --- Ana İçerik ve Analiz Paneli --- */
+        .analysis-container { min-height: calc(100vh - 70px); display: flex; align-items: center; justify-content: center; padding: 2rem 0; }
+        .analysis-panel {
+            width: 100%;
+            max-width: 900px;
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 1.5rem; padding: 2rem;
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 25px 50px -12px var(--panel-shadow);
+            animation: panel-pop 1s ease-out;
+            transition: all 0.4s ease;
+        }
+        @media (min-width: 768px) { .analysis-panel { padding: 3rem; } }
+        @keyframes panel-pop { from { opacity: 0; transform: translateY(20px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        
+        .panel-header { text-align: center; margin-bottom: 2rem; }
+        .panel-header h1 { font-weight: 700; }
+        .panel-header p { color: var(--text-secondary); font-size: 1.1rem; }
+        
+        .form-control-lg {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--panel-border);
+            color: var(--text-primary);
+            font-size: 1.1rem; border-radius: 0.75rem !important;
+            padding: 1rem 1.25rem;
+            box-shadow: none; transition: all 0.3s ease;
+        }
+        body[data-theme="light"] .form-control-lg { background: rgba(0,0,0,0.05); }
 
-    .btn-analyze {
-        background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary), var(--accent-primary));
-        background-size: 250% 100%;
-        color: #fff; font-weight: 600; border: none;
-        border-radius: 0.5rem !important;
-        transition: all 0.5s ease;
-    }
-    
-    .btn-analyze:hover { background-position: 100% 0; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 169, 255, 0.25); }
-    .btn-analyze.btn-loading { cursor: not-allowed; }
+        .form-control-lg:focus {
+            background: rgba(0, 0, 0, 0.1);
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 25px rgba(0, 169, 255, 0.3), inset 0 0 8px rgba(0, 169, 255, 0.15);
+        }
+        body[data-theme="light"] .form-control-lg:focus { box-shadow: 0 0 25px rgba(0, 123, 255, 0.2); }
+        
+        .btn-analyze {
+            background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+            background-size: 250% 100%;
+            color: #fff; font-weight: 600; border: none;
+            border-radius: 0.75rem !important;
+            transition: all 0.5s ease;
+            padding: 0 1.75rem;
+            font-size: 1.1rem;
+        }
+        .btn-analyze .btn-icon { margin-right: 0.5rem; vertical-align: -2px; }
+        .btn-analyze:hover, .btn-analyze:focus { background-position: 100% 0; transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0, 169, 255, 0.25); color: #fff; }
+        .btn-analyze:disabled { cursor: not-allowed; background: var(--text-secondary); opacity: 0.7; transform: none; box-shadow: none;}
+        
+        /* --- Sonuç Alanı & DataTables --- */
+        .results-wrapper { margin-top: 2.5rem; display: none; animation: fade-in 0.5s ease; }
+        .dataTables_wrapper { --bs-table-bg: transparent; --bs-table-striped-bg: var(--table-striped-bg); --bs-table-hover-bg: var(--table-hover-bg); color: var(--text-secondary); font-size: 0.9rem; }
+        .dt-layout-row { padding: 0.75rem 0; }
+        .dataTables_filter input, .dataTables_length select {
+            background-color: rgba(0,0,0,0.2) !important; color: var(--text-secondary) !important;
+            border: 1px solid var(--panel-border) !important; border-radius: 0.375rem;
+            transition: all 0.3s ease; padding: 0.5rem 0.75rem;
+        }
+        body[data-theme="light"] .dataTables_filter input, body[data-theme="light"] .dataTables_length select { background-color: rgba(0,0,0,0.05) !important; }
+        .dataTables_filter input:focus, .dataTables_length select:focus { border-color: var(--accent-primary) !important; box-shadow: 0 0 10px rgba(0, 169, 255, 0.2) !important; }
+        #resultTable thead th { border-bottom: 2px solid var(--panel-border); color: var(--text-primary); font-weight: 600; white-space: nowrap; }
+        #resultTable td { border-color: rgba(58, 52, 102, 0.2); vertical-align: middle; }
+        .table-hover > tbody > tr:hover > * { color: var(--text-primary) !important; }
+        .page-item .page-link { background-color: transparent !important; border-color: var(--panel-border) !important; color: var(--text-secondary) !important; margin: 0 2px; border-radius: 0.375rem; }
+        .page-item.active .page-link { background: var(--accent-primary) !important; border-color: var(--accent-primary) !important; color: #fff !important; box-shadow: 0 0 10px rgba(0, 169, 255, 0.3); }
+        .page-item:not(.active) .page-link:hover { background-color: rgba(0, 169, 255, 0.1) !important; border-color: rgba(0, 169, 255, 0.3) !important; }
+        
+        .no-results-message {
+            text-align: center;
+            padding: 3rem 1rem;
+            background-color: var(--table-striped-bg);
+            border-radius: 0.75rem;
+            border: 1px dashed var(--panel-border);
+            color: var(--text-secondary);
+        }
+        .no-results-message .icon { font-size: 3rem; margin-bottom: 1rem; color: var(--accent-primary); }
 
-    .results-container { margin-top: 2.5rem; display: none; }
-    
-    /* --- DataTables & UI Kit Integration --- */
-    .dataTables_wrapper { --bs-table-bg: transparent; --bs-table-striped-bg: rgba(0, 169, 255, 0.03); --bs-table-hover-bg: rgba(0, 169, 255, 0.08); color: var(--text-secondary); font-size: 0.9rem; }
-    .dt-layout-row { padding: 0.5rem 0; }
-    .dataTables_filter input, .dataTables_length select {
-        background-color: rgba(0,0,0,0.2) !important; color: var(--text-secondary) !important;
-        border: 1px solid var(--panel-border) !important; border-radius: 0.375rem;
-        transition: all 0.3s ease; padding: 0.5rem 0.75rem;
-    }
-    .dataTables_filter input:focus, .dataTables_length select:focus {
-        border-color: var(--accent-primary) !important; box-shadow: 0 0 10px rgba(0, 169, 255, 0.2) !important;
-    }
-    #resultTable thead th { border-bottom: 2px solid var(--panel-border); color: var(--text-primary); font-weight: 600; }
-    #resultTable td { border-color: rgba(58, 52, 102, 0.3); vertical-align: middle; }
-    .table-hover > tbody > tr:hover > * { color: #fff !important; }
-    .page-item .page-link { background-color: transparent !important; border-color: var(--panel-border) !important; color: var(--text-secondary) !important; margin: 0 2px; border-radius: 0.375rem; }
-    .page-item.active .page-link { background: var(--accent-primary) !important; border-color: var(--accent-primary) !important; color: #fff !important; box-shadow: 0 0 10px rgba(0, 169, 255, 0.3); }
-    .page-item:not(.active) .page-link:hover { background-color: rgba(0, 169, 255, 0.1) !important; border-color: rgba(0, 169, 255, 0.3) !important; }
-    .dataTables_info { padding-top: 0.6rem !important; }
+        /* --- Toast Bildirimleri --- */
+        .toast-container .toast {
+            background: rgba(10, 8, 30, 0.7) !important; border: 1px solid var(--panel-border) !important;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 0.75rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5); color: var(--text-primary);
+            transition: all 0.4s ease;
+        }
+        body[data-theme="light"] .toast { background: rgba(250, 250, 255, 0.8) !important; color: var(--text-primary); }
+        .toast-header {
+            background: linear-gradient(90deg, rgba(0, 169, 255, 0.15), rgba(166, 0, 255, 0.15)) !important;
+            color: var(--text-primary) !important; border-bottom: 1px solid var(--panel-border) !important;
+        }
+        body[data-theme="light"] .toast-header { background: linear-gradient(90deg, rgba(0, 123, 255, 0.1), rgba(100, 0, 150, 0.1)) !important; }
+        .btn-close { filter: invert(1) brightness(2) opacity(0.7); }
+        body[data-theme="light"] .btn-close { filter: none; }
+        .toast-header .icon { color: var(--accent-primary); margin-right: 0.5rem; }
+        .toast.border-danger { border-left: 4px solid var(--accent-danger) !important; }
+        .toast.border-danger .toast-header .icon { color: var(--accent-danger); }
 
-    .toast-container .toast {
-        background: rgba(10, 8, 30, 0.7) !important; border: 1px solid var(--panel-border) !important;
-        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 0.75rem;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-    }
-    .toast-header {
-        background: linear-gradient(90deg, rgba(0, 169, 255, 0.15), rgba(166, 0, 255, 0.15)) !important;
-        color: var(--text-primary) !important; border-bottom: 1px solid var(--panel-border) !important;
-    }
-    .btn-close { filter: invert(1) brightness(2) opacity(0.7); }
+        /* --- Footer --- */
+        footer { text-align: center; padding: 1.5rem; color: var(--text-secondary); font-size: 0.9rem; margin-top: auto; }
+        footer a { color: var(--accent-primary); text-decoration: none; font-weight: 500; }
+        footer a:hover { text-decoration: underline; }
 
-    .theme-toggle { font-size: 1.5rem; cursor: pointer; background: none; border: none; color: var(--text-secondary); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-    .theme-toggle:hover { color: var(--accent-primary); transform: rotate(15deg); }
-</style>
+    </style>
 </head>
-<body>
+<body data-theme="dark">
+    <!-- Arka Plan Elementleri -->
     <div id="background-container">
+        <div id="aurora-blob"></div>
         <div id="stars1" class="stars"></div>
         <div id="stars2" class="stars"></div>
-        <div id="stars3" class="stars"></div>
     </div>
-code
-Code
-<nav class="navbar navbar-expand-lg sticky-top">
-    <div class="container">
-        <a class="navbar-brand" href="#">WebLog<span>.NiggaServis</span></a>
-        <button class="theme-toggle" id="themeToggle" disabled>🌙</button>
-    </div>
-</nav>
 
-<main class="container">
-    <div class="analysis-container">
-        <div class="analysis-panel">
-            <div class="input-group input-group-lg">
-                <input type="text" id="searchQuery" class="form-control" placeholder="Milyonlarca kayıt arasında arayın..." autocomplete="off">
-                <button class="btn btn-analyze" type="button" id="btnSorgula">
-                    <span class="btn-text">Analiz Et</span>
-                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                </button>
+    <!-- Header -->
+    <header class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class='bx bxs-network-chart logo-icon'></i>Nexus<span>Log</span>
+            </a>
+            <button class="theme-toggle" id="themeToggle" aria-label="Temayı Değiştir">
+                <i class='bx bxs-sun'></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Ana İçerik -->
+    <main class="container">
+        <div class="analysis-container">
+            <div class="analysis-panel">
+                <div class="panel-header">
+                    <h1>Gelişmiş Log Analizi</h1>
+                    <p>Milyonlarca kayıt arasında anlık olarak arama yapın ve verileri analiz edin.</p>
+                </div>
+                
+                <form id="searchForm">
+                    <div class="input-group input-group-lg">
+                        <input type="text" id="searchQuery" class="form-control" placeholder="IP Adresi, kullanıcı adı, olay..." autocomplete="off" required>
+                        <button class="btn btn-analyze" type="submit" id="btnSorgula">
+                            <span class="btn-text">
+                                <i class='bx bx-search-alt btn-icon'></i>Analiz Et
+                            </span>
+                            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                </form>
+
+                <div class="results-wrapper" id="resultsWrapper">
+                    <!-- DataTables veya "Sonuç Bulunamadı" mesajı buraya eklenecek -->
+                </div>
             </div>
-            <div class="results-container" id="resultsContainer">
-                <table id="resultTable" class="table table-hover table-striped w-100"></table>
-            </div>
         </div>
-    </div>
-</main>
-
-<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
-    <div id="resultToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="10000">
-        <div class="toast-header">
-            <strong class="me-auto">Analiz Özeti</strong>
-            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-        <div class="toast-body">
-            <dl class="row gx-2 gy-1 mb-0 small">
-                <dt class="col-6 text-secondary">Sunucu</dt><dd class="col-6 text-end fw-bold" id="serverInfo">-</dd>
-                <dt class="col-6 text-secondary">Taranan Veri</dt><dd class="col-6 text-end fw-bold" id="totalData">-</dd>
-                <dt class="col-6 text-secondary">Toplam Sonuç</dt><dd class="col-6 text-end fw-bold" id="totalResults">-</dd>
-                <dt class="col-6 text-secondary">Arama Süresi</dt><dd class="col-6 text-end fw-bold" id="searchTime">-</dd>
-                <dt class="col-6 text-secondary">Yanıt Süresi</dt><dd class="col-6 text-end fw-bold" id="responseTime">-</dd>
-            </dl>
-        </div>
-    </div>
-</div>
-
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-$(document).ready(function () {
-    let dataTable = null;
-    const apiBase = "https://niggaservis.niggass.workers.dev/api/guncelog?q=";
-    const $btnSorgula = $("#btnSorgula");
-    const $searchQuery = $("#searchQuery");
-    const $resultsContainer = $("#resultsContainer");
-    const toastEl = document.getElementById('resultToast');
-    const resultToast = new bootstrap.Toast(toastEl);
+    </main>
     
-    // Tema değiştirme fonksiyonu ve başlangıç ayarı devre dışı bırakıldı.
-    // Tema kalıcı olarak 'dark' modda. İstenirse tekrar aktif edilebilir.
-    // const applyTheme = (theme) => { ... }
-    // const savedTheme = 'dark';
-    // applyTheme(savedTheme);
-    // $('#themeToggle').click(function () { ... });
+    <!-- Footer -->
+    <footer class="mt-auto">
+        <p>&copy; 2024 NexusLog. Tüm Hakları Saklıdır. <a href="#">Gizlilik Politikası</a></p>
+    </footer>
 
-    const performSearch = async () => {
-        const query = $searchQuery.val().trim();
-        if (!query) {
-            $searchQuery.focus();
-            return;
-        }
 
-        $btnSorgula.prop("disabled", true).addClass('btn-loading');
-        $btnSorgula.find('.btn-text').addClass('d-none');
-        $btnSorgula.find('.spinner-border').removeClass('d-none');
+    <!-- Toast Bildirimleri için Konteyner -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+        <!-- Başarı Toast'u -->
+        <div id="resultToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="10000">
+            <div class="toast-header">
+                <i class='bx bxs-check-shield icon'></i>
+                <strong class="me-auto">Analiz Özeti</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                <dl class="row gx-2 gy-1 mb-0 small">
+                    <dt class="col-5 text-secondary">Sunucu</dt><dd class="col-7 text-end fw-bold" id="serverInfo">-</dd>
+                    <dt class="col-5 text-secondary">Taranan Veri</dt><dd class="col-7 text-end fw-bold" id="totalData">-</dd>
+                    <dt class="col-5 text-secondary">Toplam Sonuç</dt><dd class="col-7 text-end fw-bold" id="totalResults">-</dd>
+                    <dt class="col-5 text-secondary">Arama Süresi</dt><dd class="col-7 text-end fw-bold" id="searchTime">-</dd>
+                    <dt class="col-5 text-secondary">Yanıt Süresi</dt><dd class="col-7 text-end fw-bold" id="responseTime">-</dd>
+                </dl>
+            </div>
+        </div>
+        <!-- Hata Toast'u -->
+        <div id="errorToast" class="toast border-danger" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="10000">
+            <div class="toast-header">
+                <i class='bx bxs-error-alt icon'></i>
+                <strong class="me-auto">Bir Hata Oluştu</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="errorToastBody">
+                Bir şeyler ters gitti. Lütfen tekrar deneyin.
+            </div>
+        </div>
+    </div>
 
-        try {
-            const res = await fetch(apiBase + encodeURIComponent(query));
-            if (!res.ok) throw new Error(`API bağlantı hatası: ${res.status}`);
-            const json = await res.json();
+    <!-- Scriptler -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- DEĞİŞKENLER VE DOM ELEMENTLERİ ---
+            let dataTable = null;
+            // DİKKAT: API adresi kendi sunucu adresinizle değiştirilmelidir.
+            const API_BASE_URL = "https://api.nexuslog.dev/v1/search?q="; // "https://niggaservis.niggass.workers.dev/api/guncelog?q=" yerine
+            
+            const $searchForm = $('#searchForm');
+            const $btnSorgula = $("#btnSorgula");
+            const $searchQuery = $("#searchQuery");
+            const $resultsWrapper = $("#resultsWrapper");
+            const $themeToggle = $('#themeToggle');
 
-            if (json.basarili && json.veriler && json.veriler.length > 0) {
-                $("#serverInfo").text(json.sunucuBilgisi.platform);
-                $("#totalData").text(json.sunucuBilgisi.toplamVeri);
-                $("#totalResults").text(json.aramaBilgisi.toplamSonuc.toLocaleString());
-                $("#searchTime").text(`${json.aramaBilgisi.elasticAramaSuresiMs} ms`);
-                $("#responseTime").text(`${json.aramaBilgisi.cevapSuresiMs} ms`);
-                resultToast.show();
+            const resultToastEl = document.getElementById('resultToast');
+            const errorToastEl = document.getElementById('errorToast');
+            const resultToast = new bootstrap.Toast(resultToastEl);
+            const errorToast = new bootstrap.Toast(errorToastEl);
 
-                if (dataTable) {
-                    dataTable.clear().rows.add(json.veriler.map(v => [v.icerik.log_mesaji || ""])).draw();
+            // --- TEMA YÖNETİMİ ---
+            const applyTheme = (theme) => {
+                document.body.setAttribute('data-theme', theme);
+                $themeToggle.html(theme === 'dark' ? "<i class='bx bxs-sun'></i>" : "<i class='bx bxs-moon'></i>");
+                localStorage.setItem('theme', theme);
+            };
+
+            $themeToggle.on('click', function () {
+                const currentTheme = document.body.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                applyTheme(newTheme);
+            });
+
+            // Sayfa yüklendiğinde kayıtlı temayı uygula
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            applyTheme(savedTheme);
+
+
+            // --- ARAYÜZ YÖNETİM FONKSİYONLARI ---
+            const setLoading = (isLoading) => {
+                if (isLoading) {
+                    $btnSorgula.prop("disabled", true);
+                    $btnSorgula.find('.btn-text').addClass('d-none');
+                    $btnSorgula.find('.spinner-border').removeClass('d-none');
                 } else {
-                    $resultsContainer.fadeIn(500);
+                    $btnSorgula.prop("disabled", false);
+                    $btnSorgula.find('.btn-text').removeClass('d-none');
+                    $btnSorgula.find('.spinner-border').addClass('d-none');
+                }
+            };
+            
+            const showToast = (type, message) => {
+                if (type === 'success') {
+                    resultToast.show();
+                } else {
+                    $('#errorToastBody').text(message || 'Bilinmeyen bir hata oluştu.');
+                    errorToast.show();
+                }
+            };
+            
+            const displayNoResults = () => {
+                $resultsWrapper.html(`
+                    <div class="no-results-message">
+                        <div class="icon"><i class='bx bx-search-alt-2'></i></div>
+                        <h4>Sonuç Bulunamadı</h4>
+                        <p>Arama kriterlerinize uygun herhangi bir log kaydı bulunamadı. Lütfen farklı bir anahtar kelime ile tekrar deneyin.</p>
+                    </div>
+                `).fadeIn(300);
+            };
+
+            const displayResults = (data) => {
+                // Eğer tablo zaten varsa, temizle ve yeni veriyi ekle.
+                if (dataTable) {
+                    dataTable.clear().rows.add(data.map(v => [v.icerik.log_mesaji || ""])).draw();
+                } else {
+                    // Yoksa, tabloyu oluştur.
+                    $resultsWrapper.html('<table id="resultTable" class="table table-hover table-striped w-100"></table>');
                     dataTable = $("#resultTable").DataTable({
-                        data: json.veriler.map(v => [v.icerik.log_mesaji || ""]),
+                        data: data.map(v => [v.icerik.log_mesaji || ""]),
                         columns: [{ title: "Log Mesajı" }],
                         responsive: true,
                         language: { url: "//cdn.datatables.net/plug-ins/2.0.8/i18n/tr.json" },
                         pageLength: 10,
                         lengthMenu: [10, 25, 50, 100],
-                        stateSave: true,
+                        stateSave: true, // Kullanıcının sayfa ve filtre ayarlarını hatırlar
+                        drawCallback: function () {
+                             // Tablo her çizildiğinde satırların yumuşakça görünmesini sağla
+                             $('#resultTable tbody tr').css('opacity', 0).animate({ opacity: 1 }, 200);
+                        }
                     });
                 }
-            } else {
-                alert(json.mesaj || "Arama kriterlerinize uygun sonuç bulunamadı.");
-                 if(dataTable) {
-                    dataTable.clear().draw();
-                 }
-            }
-        } catch (error) {
-            console.error("Analiz Hatası:", error);
-            alert("Analiz sırasında kritik bir hata oluştu. Lütfen ağ bağlantınızı kontrol edin veya daha sonra tekrar deneyin.");
-        } finally {
-             $btnSorgula.prop("disabled", false).removeClass('btn-loading');
-             $btnSorgula.find('.btn-text').removeClass('d-none');
-             $btnSorgula.find('.spinner-border').addClass('d-none');
-        }
-    };
+                $resultsWrapper.fadeIn(500);
+            };
+            
+            // --- ANA ARAMA FONKSİYONU ---
+            const performSearch = async () => {
+                const query = $searchQuery.val().trim();
+                if (!query) {
+                    $searchQuery.focus();
+                    return;
+                }
 
-    $btnSorgula.click(performSearch);
-    $searchQuery.keypress(e => { if (e.which === 13) performSearch(); });
-});
-</script>
+                setLoading(true);
+
+                try {
+                    // GERÇEK API ADRESİNİZİ KULLANIN
+                    // const res = await fetch(API_BASE_URL + encodeURIComponent(query));
+                    // if (!res.ok) throw new Error(`API bağlantı hatası: ${res.status}`);
+                    // const json = await res.json();
+                    
+                    // --- BAŞARILI API YANITI SİMÜLASYONU ---
+                    console.log(`Simulating API call for query: ${query}`);
+                    await new Promise(resolve => setTimeout(resolve, 1500)); // 1.5 saniye bekle
+                    const json = {
+                        "basarili": true,
+                        "mesaj": "Arama başarıyla tamamlandı.",
+                        "veriler": Array.from({length: 23}, (_, i) => ({
+                            "icerik": { "log_mesaji": `[KullanıcıID: ${Math.floor(Math.random() * 1000)}] - '${query}' ile ilgili ${i+1}. örnek log mesajı. IP: 192.168.1.${Math.floor(Math.random() * 255)}` }
+                        })),
+                        "sunucuBilgisi": { "platform": "NexusLog-West-1", "toplamVeri": "2.8 TB" },
+                        "aramaBilgisi": { "toplamSonuc": 23, "elasticAramaSuresiMs": 182, "cevapSuresiMs": 215 }
+                    };
+                    // --- SİMÜLASYON SONU ---
+
+                    if (json.basarili && json.veriler && json.veriler.length > 0) {
+                        // İstatistikleri güncelle
+                        $("#serverInfo").text(json.sunucuBilgisi.platform);
+                        $("#totalData").text(json.sunucuBilgisi.toplamVeri);
+                        $("#totalResults").text(json.aramaBilgisi.toplamSonuc.toLocaleString());
+                        $("#searchTime").text(`${json.aramaBilgisi.elasticAramaSuresiMs} ms`);
+                        $("#responseTime").text(`${json.aramaBilgisi.cevapSuresiMs} ms`);
+                        showToast('success');
+                        
+                        displayResults(json.veriler);
+
+                    } else {
+                        displayNoResults();
+                    }
+                } catch (error) {
+                    console.error("Analiz Hatası:", error);
+                    showToast('error', "Analiz sırasında kritik bir hata oluştu. Lütfen ağ bağlantınızı kontrol edin veya daha sonra tekrar deneyin.");
+                    $resultsWrapper.fadeOut(300);
+                } finally {
+                    setLoading(false);
+                }
+            };
+            
+            // --- OLAY DİNLEYİCİLERİ ---
+            $searchForm.on('submit', (e) => {
+                e.preventDefault(); // Formun sayfayı yenilemesini engelle
+                performSearch();
+            });
+        });
+    </script>
 </body>
 </html>
