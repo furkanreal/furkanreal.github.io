@@ -1,257 +1,885 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WebLog.NiggaServis | Gelişmiş Analiz Platformu</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebLog Analytics | Advanced Analysis Platform</title>
+    <meta name="description" content="Advanced log analysis platform with real-time search capabilities">
+    
+    <!-- External Resources -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
     <style>
+        /* CSS Custom Properties */
         :root {
             --bg-dark-space: #020314;
+            --bg-secondary: #0a0b1e;
             --accent-primary: #00A9FF;
             --accent-secondary: #A600FF;
-            --panel-bg: rgba(18, 17, 39, 0.6);
-            --panel-border: rgba(58, 52, 102, 0.5);
+            --accent-tertiary: #00D9FF;
+            --panel-bg: rgba(18, 17, 39, 0.7);
+            --panel-bg-hover: rgba(18, 17, 39, 0.85);
+            --panel-border: rgba(58, 52, 102, 0.6);
+            --panel-border-hover: rgba(0, 169, 255, 0.4);
             --text-primary: #e2e8f0;
             --text-secondary: #8c9bb3;
+            --text-muted: #64748b;
             --text-dark: #0f172a;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --shadow-base: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            --shadow-glow: 0 0 30px rgba(0, 169, 255, 0.15);
+            --border-radius: 0.75rem;
+            --border-radius-lg: 1rem;
+            --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --backdrop-blur: 16px;
+        }
+
+        /* Base Styles */
+        * {
+            box-sizing: border-box;
         }
 
         body {
             background-color: var(--bg-dark-space);
             color: var(--text-primary);
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-weight: 400;
+            line-height: 1.6;
             overflow-x: hidden;
             position: relative;
+            min-height: 100vh;
         }
 
+        /* Animated Background */
         #background-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; overflow: hidden;
-            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            background: 
+                radial-gradient(ellipse at top, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
         }
 
-        .stars { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-repeat: repeat; background-size: cover; opacity: 0.7; }
-        #stars1 { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><circle cx="15%" cy="20%" r="1" fill="white" opacity="0.8"/><circle cx="80%" cy="10%" r="1" fill="white" opacity="0.8"/><circle cx="50%" cy="70%" r="1" fill="white" opacity="0.8"/></svg>'); animation: move-stars 180s linear infinite; }
-        #stars2 { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><circle cx="30%" cy="50%" r="0.8" fill="white" opacity="0.6"/><circle cx="90%" cy="60%" r="0.8" fill="white" opacity="0.6"/><circle cx="40%" cy="90%" r="0.8" fill="white" opacity="0.6"/></svg>'); animation: move-stars 120s linear infinite; }
-        #stars3 { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><circle cx="5%" cy="80%" r="0.6" fill="white" opacity="0.4"/><circle cx="60%" cy="30%" r="0.6" fill="white" opacity="0.4"/></svg>'); animation: move-stars 90s linear infinite; }
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-repeat: repeat;
+            background-size: cover;
+            opacity: 0.8;
+        }
 
-        @keyframes move-stars { from { transform: translateY(0); } to { transform: translateY(-100vh); } }
-        
+        #stars1 {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 100"><circle cx="15" cy="20" r="0.8" fill="white" opacity="0.9"/><circle cx="80" cy="10" r="0.6" fill="white" opacity="0.7"/><circle cx="50" cy="70" r="0.7" fill="white" opacity="0.8"/><circle cx="25" cy="85" r="0.5" fill="white" opacity="0.6"/><circle cx="90" cy="45" r="0.9" fill="white" opacity="0.9"/></svg>');
+            animation: move-stars 200s linear infinite;
+        }
+
+        #stars2 {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 100"><circle cx="30" cy="50" r="0.4" fill="white" opacity="0.6"/><circle cx="90" cy="60" r="0.5" fill="white" opacity="0.7"/><circle cx="40" cy="90" r="0.3" fill="white" opacity="0.5"/><circle cx="70" cy="25" r="0.4" fill="white" opacity="0.6"/></svg>');
+            animation: move-stars 150s linear infinite reverse;
+        }
+
+        #stars3 {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 100"><circle cx="5" cy="80" r="0.3" fill="white" opacity="0.4"/><circle cx="60" cy="30" r="0.2" fill="white" opacity="0.3"/><circle cx="85" cy="75" r="0.25" fill="white" opacity="0.35"/></svg>');
+            animation: move-stars 100s linear infinite;
+        }
+
+        @keyframes move-stars {
+            from { transform: translateY(0px) translateX(0px); }
+            to { transform: translateY(-100vh) translateX(-20px); }
+        }
+
+        /* Navigation */
         .navbar {
-            background: rgba(2, 3, 20, 0.4);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            background: rgba(2, 3, 20, 0.5);
+            backdrop-filter: blur(var(--backdrop-blur));
+            -webkit-backdrop-filter: blur(var(--backdrop-blur));
             border-bottom: 1px solid var(--panel-border);
+            transition: var(--transition-base);
+            position: sticky;
+            top: 0;
+            z-index: 1020;
         }
 
-        .navbar-brand { font-weight: 900; font-size: 1.6rem; color: var(--text-primary); }
-        .navbar-brand span { color: var(--accent-primary); font-weight: 600; }
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.75rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: var(--transition-base);
+        }
 
-        .analysis-container { min-height: calc(100vh - 70px); display: flex; align-items: center; }
+        .navbar-brand:hover {
+            color: var(--accent-primary);
+            transform: translateY(-1px);
+        }
 
+        .navbar-brand .accent {
+            color: var(--accent-primary);
+            font-weight: 600;
+        }
+
+        /* Main Container */
+        .analysis-container {
+            min-height: calc(100vh - 80px);
+            display: flex;
+            align-items: center;
+            padding: 2rem 0;
+        }
+
+        /* Analysis Panel */
         .analysis-panel {
             width: 100%;
             background: var(--panel-bg);
             border: 1px solid var(--panel-border);
-            border-radius: 1rem; padding: 2.5rem;
-            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
-            animation: panel-pop 1s ease-out;
+            border-radius: var(--border-radius-lg);
+            padding: 3rem;
+            backdrop-filter: blur(var(--backdrop-blur));
+            -webkit-backdrop-filter: blur(var(--backdrop-blur));
+            box-shadow: var(--shadow-base), var(--shadow-glow);
+            transition: var(--transition-base);
+            animation: panel-entrance 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        @keyframes panel-pop { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        
+
+        .analysis-panel:hover {
+            background: var(--panel-bg-hover);
+            border-color: var(--panel-border-hover);
+            transform: translateY(-2px);
+            box-shadow: 
+                var(--shadow-base), 
+                0 0 40px rgba(0, 169, 255, 0.2),
+                0 0 80px rgba(0, 169, 255, 0.1);
+        }
+
+        @keyframes panel-entrance {
+            0% {
+                opacity: 0;
+                transform: scale(0.95) translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* Form Controls */
         .input-group-lg .form-control {
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.4);
             border: 1px solid var(--panel-border);
             color: var(--text-primary);
-            font-size: 1.1rem; border-radius: 0.5rem !important;
-            padding: 0.9rem 1.2rem;
-            box-shadow: none; transition: all 0.3s ease;
+            font-size: 1.125rem;
+            font-weight: 500;
+            border-radius: var(--border-radius) !important;
+            padding: 1rem 1.25rem;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: var(--transition-base);
+            backdrop-filter: blur(8px);
         }
 
         .input-group-lg .form-control:focus {
-            background: rgba(0, 0, 0, 0.2); border-color: var(--accent-primary);
-            box-shadow: 0 0 25px rgba(0, 169, 255, 0.3), inset 0 0 5px rgba(0, 169, 255, 0.2);
+            background: rgba(0, 0, 0, 0.25);
+            border-color: var(--accent-primary);
+            box-shadow: 
+                inset 0 2px 4px rgba(0, 0, 0, 0.2),
+                0 0 25px rgba(0, 169, 255, 0.4),
+                inset 0 0 10px rgba(0, 169, 255, 0.15);
+            transform: translateY(-1px);
         }
 
+        .input-group-lg .form-control::placeholder {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        /* Button Styles */
         .btn-analyze {
-            background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary), var(--accent-primary));
-            background-size: 250% 100%;
-            color: #fff; font-weight: 600; border: none;
-            border-radius: 0.5rem !important;
-            transition: all 0.5s ease;
+            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 50%, var(--accent-tertiary) 100%);
+            background-size: 300% 300%;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 1.125rem;
+            border: none;
+            border-radius: var(--border-radius) !important;
+            padding: 1rem 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition-base);
+            box-shadow: 0 4px 15px rgba(0, 169, 255, 0.3);
         }
-        
-        .btn-analyze:hover { background-position: 100% 0; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 169, 255, 0.25); }
-        .btn-analyze.btn-loading { cursor: not-allowed; }
 
-        .results-container { margin-top: 2.5rem; display: none; }
-        
-        /* --- DataTables & UI Kit Integration --- */
-        .dataTables_wrapper { --bs-table-bg: transparent; --bs-table-striped-bg: rgba(0, 169, 255, 0.03); --bs-table-hover-bg: rgba(0, 169, 255, 0.08); color: var(--text-secondary); font-size: 0.9rem; }
-        .dt-layout-row { padding: 0.5rem 0; }
-        .dataTables_filter input, .dataTables_length select {
-            background-color: rgba(0,0,0,0.2) !important; color: var(--text-secondary) !important;
-            border: 1px solid var(--panel-border) !important; border-radius: 0.375rem;
-            transition: all 0.3s ease; padding: 0.5rem 0.75rem;
+        .btn-analyze::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
         }
-        .dataTables_filter input:focus, .dataTables_length select:focus {
-            border-color: var(--accent-primary) !important; box-shadow: 0 0 10px rgba(0, 169, 255, 0.2) !important;
-        }
-        #resultTable thead th { border-bottom: 2px solid var(--panel-border); color: var(--text-primary); font-weight: 600; }
-        #resultTable td { border-color: rgba(58, 52, 102, 0.3); vertical-align: middle; }
-        .table-hover > tbody > tr:hover > * { color: #fff !important; }
-        .page-item .page-link { background-color: transparent !important; border-color: var(--panel-border) !important; color: var(--text-secondary) !important; margin: 0 2px; border-radius: 0.375rem; }
-        .page-item.active .page-link { background: var(--accent-primary) !important; border-color: var(--accent-primary) !important; color: #fff !important; box-shadow: 0 0 10px rgba(0, 169, 255, 0.3); }
-        .page-item:not(.active) .page-link:hover { background-color: rgba(0, 169, 255, 0.1) !important; border-color: rgba(0, 169, 255, 0.3) !important; }
-        .dataTables_info { padding-top: 0.6rem !important; }
 
+        .btn-analyze:hover {
+            background-position: 100% 0;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 169, 255, 0.4);
+        }
+
+        .btn-analyze:hover::before {
+            left: 100%;
+        }
+
+        .btn-analyze:active {
+            transform: translateY(0);
+        }
+
+        .btn-analyze.btn-loading {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        /* Results Container */
+        .results-container {
+            margin-top: 3rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .results-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* DataTables Styling */
+        .dataTables_wrapper {
+            --bs-table-bg: transparent;
+            --bs-table-striped-bg: rgba(0, 169, 255, 0.04);
+            --bs-table-hover-bg: rgba(0, 169, 255, 0.08);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .dt-layout-row {
+            padding: 0.75rem 0;
+        }
+
+        .dataTables_filter input,
+        .dataTables_length select {
+            background-color: rgba(0, 0, 0, 0.3) !important;
+            color: var(--text-secondary) !important;
+            border: 1px solid var(--panel-border) !important;
+            border-radius: var(--border-radius);
+            transition: var(--transition-base);
+            padding: 0.5rem 0.75rem;
+            backdrop-filter: blur(8px);
+        }
+
+        .dataTables_filter input:focus,
+        .dataTables_length select:focus {
+            border-color: var(--accent-primary) !important;
+            box-shadow: 0 0 15px rgba(0, 169, 255, 0.3) !important;
+            background-color: rgba(0, 0, 0, 0.2) !important;
+        }
+
+        #resultTable {
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        #resultTable thead th {
+            border-bottom: 2px solid var(--panel-border);
+            color: var(--text-primary);
+            font-weight: 600;
+            background: rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        #resultTable td {
+            border-color: rgba(58, 52, 102, 0.3);
+            vertical-align: middle;
+            transition: var(--transition-base);
+            word-break: break-word;
+        }
+
+        .table-hover > tbody > tr:hover > * {
+            color: #ffffff !important;
+            background-color: var(--bs-table-hover-bg) !important;
+        }
+
+        /* Pagination */
+        .page-item .page-link {
+            background-color: transparent !important;
+            border-color: var(--panel-border) !important;
+            color: var(--text-secondary) !important;
+            margin: 0 0.125rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition-base);
+            backdrop-filter: blur(8px);
+        }
+
+        .page-item.active .page-link {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)) !important;
+            border-color: var(--accent-primary) !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 15px rgba(0, 169, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .page-item:not(.active) .page-link:hover {
+            background-color: rgba(0, 169, 255, 0.1) !important;
+            border-color: rgba(0, 169, 255, 0.4) !important;
+            transform: translateY(-1px);
+        }
+
+        .dataTables_info {
+            padding-top: 0.75rem !important;
+            font-weight: 500;
+        }
+
+        /* Toast Notifications */
         .toast-container .toast {
-            background: rgba(10, 8, 30, 0.7) !important; border: 1px solid var(--panel-border) !important;
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 0.75rem;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            background: rgba(10, 8, 30, 0.85) !important;
+            border: 1px solid var(--panel-border) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-base), var(--shadow-glow);
+            animation: toast-slide-in 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .toast-header {
-            background: linear-gradient(90deg, rgba(0, 169, 255, 0.15), rgba(166, 0, 255, 0.15)) !important;
-            color: var(--text-primary) !important; border-bottom: 1px solid var(--panel-border) !important;
-        }
-        .btn-close { filter: invert(1) brightness(2) opacity(0.7); }
 
-        .theme-toggle { font-size: 1.5rem; cursor: pointer; background: none; border: none; color: var(--text-secondary); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .theme-toggle:hover { color: var(--accent-primary); transform: rotate(15deg); }
+        @keyframes toast-slide-in {
+            from {
+                opacity: 0;
+                transform: translateX(100%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) translateY(0);
+            }
+        }
+
+        .toast-header {
+            background: linear-gradient(90deg, rgba(0, 169, 255, 0.2), rgba(166, 0, 255, 0.2)) !important;
+            color: var(--text-primary) !important;
+            border-bottom: 1px solid var(--panel-border) !important;
+            font-weight: 600;
+        }
+
+        .toast-body {
+            padding: 1.25rem;
+        }
+
+        .toast-body dl dd {
+            color: var(--accent-primary);
+            font-weight: 600;
+        }
+
+        .btn-close {
+            filter: invert(1) brightness(2) opacity(0.8);
+            transition: var(--transition-base);
+        }
+
+        .btn-close:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            font-size: 1.5rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            padding: 0.5rem;
+            border-radius: 50%;
+        }
+
+        .theme-toggle:hover {
+            color: var(--accent-primary);
+            transform: rotate(15deg) scale(1.1);
+            background: rgba(0, 169, 255, 0.1);
+        }
+
+        /* Loading States */
+        .loading-shimmer {
+            background: linear-gradient(90deg, transparent, rgba(0, 169, 255, 0.1), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .analysis-panel {
+                padding: 2rem 1.5rem;
+                margin: 1rem;
+            }
+            
+            .navbar-brand {
+                font-size: 1.5rem;
+            }
+            
+            .input-group-lg .form-control,
+            .btn-analyze {
+                font-size: 1rem;
+                padding: 0.875rem 1rem;
+            }
+            
+            .results-container {
+                margin-top: 2rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .analysis-panel {
+                padding: 1.5rem 1rem;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .btn-analyze {
+                margin-top: 0.75rem;
+                width: 100%;
+            }
+        }
+
+        /* Accessibility Improvements */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            
+            .stars {
+                animation: none;
+            }
+        }
+
+        /* Focus Styles */
+        .btn:focus,
+        .form-control:focus {
+            outline: 2px solid var(--accent-primary);
+            outline-offset: 2px;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--panel-border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-primary);
+        }
     </style>
 </head>
 <body>
+    <!-- Animated Background -->
     <div id="background-container">
         <div id="stars1" class="stars"></div>
         <div id="stars2" class="stars"></div>
         <div id="stars3" class="stars"></div>
     </div>
-    
-    <nav class="navbar navbar-expand-lg sticky-top">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <a class="navbar-brand" href="#">WebLog<span>.NiggaServis</span></a>
-            <button class="theme-toggle" id="themeToggle" disabled>🌙</button>
+            <a class="navbar-brand" href="#" aria-label="WebLog Analytics">
+                WebLog<span class="accent">Analytics</span>
+            </a>
+            <button class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">
+                🌙
+            </button>
         </div>
     </nav>
 
+    <!-- Main Content -->
     <main class="container">
         <div class="analysis-container">
             <div class="analysis-panel">
                 <div class="input-group input-group-lg">
-                    <input type="text" id="searchQuery" class="form-control" placeholder="Milyonlarca kayıt arasında arayın..." autocomplete="off">
-                    <button class="btn btn-analyze" type="button" id="btnSorgula">
+                    <input 
+                        type="text" 
+                        id="searchQuery" 
+                        class="form-control" 
+                        placeholder="Milyonlarca kayıt arasında arayın..." 
+                        autocomplete="off"
+                        aria-label="Search query"
+                        aria-describedby="btnSorgula"
+                    >
+                    <button 
+                        class="btn btn-analyze" 
+                        type="button" 
+                        id="btnSorgula"
+                        aria-label="Start analysis"
+                    >
                         <span class="btn-text">Analiz Et</span>
                         <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                     </button>
                 </div>
+                
                 <div class="results-container" id="resultsContainer">
-                    <table id="resultTable" class="table table-hover table-striped w-100"></table>
+                    <table 
+                        id="resultTable" 
+                        class="table table-hover table-striped w-100"
+                        role="table"
+                        aria-label="Search results"
+                    ></table>
                 </div>
             </div>
         </div>
     </main>
 
+    <!-- Toast Notification -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
-        <div id="resultToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="10000">
+        <div 
+            id="resultToast" 
+            class="toast" 
+            role="alert" 
+            aria-live="assertive" 
+            aria-atomic="true" 
+            data-bs-delay="12000"
+        >
             <div class="toast-header">
-                <strong class="me-auto">Analiz Özeti</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                <strong class="me-auto">📊 Analiz Özeti</strong>
+                <button 
+                    type="button" 
+                    class="btn-close" 
+                    data-bs-dismiss="toast" 
+                    aria-label="Close notification"
+                ></button>
             </div>
             <div class="toast-body">
                 <dl class="row gx-2 gy-1 mb-0 small">
-                    <dt class="col-6 text-secondary">Sunucu</dt><dd class="col-6 text-end fw-bold" id="serverInfo">-</dd>
-                    <dt class="col-6 text-secondary">Taranan Veri</dt><dd class="col-6 text-end fw-bold" id="totalData">-</dd>
-                    <dt class="col-6 text-secondary">Toplam Sonuç</dt><dd class="col-6 text-end fw-bold" id="totalResults">-</dd>
-                    <dt class="col-6 text-secondary">Arama Süresi</dt><dd class="col-6 text-end fw-bold" id="searchTime">-</dd>
-                    <dt class="col-6 text-secondary">Yanıt Süresi</dt><dd class="col-6 text-end fw-bold" id="responseTime">-</dd>
+                    <dt class="col-6 text-secondary">Sunucu</dt>
+                    <dd class="col-6 text-end fw-bold" id="serverInfo">-</dd>
+                    <dt class="col-6 text-secondary">Taranan Veri</dt>
+                    <dd class="col-6 text-end fw-bold" id="totalData">-</dd>
+                    <dt class="col-6 text-secondary">Toplam Sonuç</dt>
+                    <dd class="col-6 text-end fw-bold" id="totalResults">-</dd>
+                    <dt class="col-6 text-secondary">Arama Süresi</dt>
+                    <dd class="col-6 text-end fw-bold" id="searchTime">-</dd>
+                    <dt class="col-6 text-secondary">Yanıt Süresi</dt>
+                    <dd class="col-6 text-end fw-bold" id="responseTime">-</dd>
                 </dl>
             </div>
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
     <script>
-    $(document).ready(function () {
-        let dataTable = null;
-        const apiBase = "https://niggaservis.niggass.workers.dev/api/guncelog?q=";
-        const $btnSorgula = $("#btnSorgula");
-        const $searchQuery = $("#searchQuery");
-        const $resultsContainer = $("#resultsContainer");
-        const toastEl = document.getElementById('resultToast');
-        const resultToast = new bootstrap.Toast(toastEl);
-        
-        // Tema değiştirme fonksiyonu ve başlangıç ayarı devre dışı bırakıldı.
-        // Tema kalıcı olarak 'dark' modda. İstenirse tekrar aktif edilebilir.
-        // const applyTheme = (theme) => { ... }
-        // const savedTheme = 'dark';
-        // applyTheme(savedTheme);
-        // $('#themeToggle').click(function () { ... });
+        $(document).ready(function() {
+            // Configuration
+            const CONFIG = {
+                API_BASE: "https://niggaservis.niggass.workers.dev/api/guncelog?q=",
+                SEARCH_DEBOUNCE: 300,
+                TOAST_DELAY: 12000,
+                ANIMATION_DURATION: 300
+            };
 
-        const performSearch = async () => {
-            const query = $searchQuery.val().trim();
-            if (!query) {
-                $searchQuery.focus();
-                return;
-            }
+            // State Management
+            let dataTable = null;
+            let searchTimeout = null;
+            let isLoading = false;
 
-            $btnSorgula.prop("disabled", true).addClass('btn-loading');
-            $btnSorgula.find('.btn-text').addClass('d-none');
-            $btnSorgula.find('.spinner-border').removeClass('d-none');
+            // DOM Elements
+            const $btnSorgula = $("#btnSorgula");
+            const $searchQuery = $("#searchQuery");
+            const $resultsContainer = $("#resultsContainer");
+            const $btnText = $btnSorgula.find('.btn-text');
+            const $spinner = $btnSorgula.find('.spinner-border');
+            
+            // Toast Setup
+            const toastEl = document.getElementById('resultToast');
+            const resultToast = new bootstrap.Toast(toastEl, {
+                delay: CONFIG.TOAST_DELAY
+            });
 
-            try {
-                const res = await fetch(apiBase + encodeURIComponent(query));
-                if (!res.ok) throw new Error(`API bağlantı hatası: ${res.status}`);
-                const json = await res.json();
+            // Utility Functions
+            const debounce = (func, wait) => {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            };
 
-                if (json.basarili && json.veriler && json.veriler.length > 0) {
-                    $("#serverInfo").text(json.sunucuBilgisi.platform);
-                    $("#totalData").text(json.sunucuBilgisi.toplamVeri);
-                    $("#totalResults").text(json.aramaBilgisi.toplamSonuc.toLocaleString());
-                    $("#searchTime").text(`${json.aramaBilgisi.elasticAramaSuresiMs} ms`);
-                    $("#responseTime").text(`${json.aramaBilgisi.cevapSuresiMs} ms`);
-                    resultToast.show();
+            const formatNumber = (num) => {
+                return new Intl.NumberFormat('tr-TR').format(num);
+            };
 
-                    if (dataTable) {
-                        dataTable.clear().rows.add(json.veriler.map(v => [v.icerik.log_mesaji || ""])).draw();
-                    } else {
-                        $resultsContainer.fadeIn(500);
-                        dataTable = $("#resultTable").DataTable({
-                            data: json.veriler.map(v => [v.icerik.log_mesaji || ""]),
-                            columns: [{ title: "Log Mesajı" }],
-                            responsive: true,
-                            language: { url: "//cdn.datatables.net/plug-ins/2.0.8/i18n/tr.json" },
-                            pageLength: 10,
-                            lengthMenu: [10, 25, 50, 100],
-                            stateSave: true,
-                        });
-                    }
+            const showError = (message, isNetworkError = false) => {
+                const errorTitle = isNetworkError ? '🌐 Bağlantı Hatası' : '⚠️ Hata';
+                const errorMessage = isNetworkError 
+                    ? 'Ağ bağlantınızı kontrol edin ve tekrar deneyin.'
+                    : message;
+                    
+                // Could implement a proper error toast here
+                alert(`${errorTitle}\n${errorMessage}`);
+            };
+
+            const setLoadingState = (loading) => {
+                isLoading = loading;
+                $btnSorgula.prop("disabled", loading).toggleClass('btn-loading', loading);
+                
+                if (loading) {
+                    $btnText.addClass('d-none');
+                    $spinner.removeClass('d-none');
+                    $searchQuery.addClass('loading-shimmer');
                 } else {
-                    alert(json.mesaj || "Arama kriterlerinize uygun sonuç bulunamadı.");
-                     if(dataTable) {
-                        dataTable.clear().draw();
-                     }
+                    $btnText.removeClass('d-none');
+                    $spinner.addClass('d-none');
+                    $searchQuery.removeClass('loading-shimmer');
                 }
-            } catch (error) {
-                console.error("Analiz Hatası:", error);
-                alert("Analiz sırasında kritik bir hata oluştu. Lütfen ağ bağlantınızı kontrol edin veya daha sonra tekrar deneyin.");
-            } finally {
-                 $btnSorgula.prop("disabled", false).removeClass('btn-loading');
-                 $btnSorgula.find('.btn-text').removeClass('d-none');
-                 $btnSorgula.find('.spinner-border').addClass('d-none');
-            }
-        };
+            };
 
-        $btnSorgula.click(performSearch);
-        $searchQuery.keypress(e => { if (e.which === 13) performSearch(); });
-    });
+            const updateToastData = (data) => {
+                $("#serverInfo").text(data.sunucuBilgisi?.platform || 'N/A');
+                $("#totalData").text(data.sunucuBilgisi?.toplamVeri || 'N/A');
+                $("#totalResults").text(formatNumber(data.aramaBilgisi?.toplamSonuc || 0));
+                $("#searchTime").text(`${data.aramaBilgisi?.elasticAramaSuresiMs || 0} ms`);
+                $("#responseTime").text(`${data.aramaBilgisi?.cevapSuresiMs || 0} ms`);
+            };
+
+            const initializeDataTable = (data) => {
+                const tableData = data.map(item => [
+                    item.icerik?.log_mesaji || "Veri bulunamadı"
+                ]);
+
+                if (dataTable) {
+                    dataTable.clear().rows.add(tableData).draw();
+                } else {
+                    $resultsContainer.addClass('show');
+                    
+                    dataTable = $("#resultTable").DataTable({
+                        data: tableData,
+                        columns: [
+                            { 
+                                title: "📋 Log Mesajları", 
+                                width: "100%",
+                                render: function(data, type, row) {
+                                    if (type === 'display') {
+                                        // Truncate long messages with expand option
+                                        if (data.length > 200) {
+                                            const truncated = data.substring(0, 200);
+                                            return `<span class="truncated">${truncated}...</span>
+                                                   <button class="btn btn-sm btn-link p-0 ms-2 expand-btn" onclick="$(this).prev().text('${data.replace(/'/g, "\\'")}'); $(this).hide();">
+                                                       <small>Devamını Göster</small>
+                                                   </button>`;
+                                        }
+                                        return data;
+                                    }
+                                    return data;
+                                }
+                            }
+                        ],
+                        responsive: true,
+                        language: {
+                            url: "//cdn.datatables.net/plug-ins/2.0.8/i18n/tr.json"
+                        },
+                        pageLength: 15,
+                        lengthMenu: [[10, 15, 25, 50, 100, -1], [10, 15, 25, 50, 100, "Tümü"]],
+                        stateSave: true,
+                        order: [[0, 'desc']],
+                        drawCallback: function() {
+                            // Add animations to new rows
+                            $(this.api().table().nodes()).find('tbody tr').each(function(index) {
+                                $(this).css({
+                                    'opacity': '0',
+                                    'transform': 'translateY(10px)'
+                                }).delay(index * 50).animate({
+                                    'opacity': '1'
+                                }, {
+                                    duration: CONFIG.ANIMATION_DURATION,
+                                    complete: function() {
+                                        $(this).css('transform', 'translateY(0)');
+                                    }
+                                });
+                            });
+                        },
+                        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
+                             '<"row"<"col-sm-12"tr>>' +
+                             '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+                        processing: true
+                    });
+                }
+            };
+
+            // Main Search Function
+            const performSearch = async () => {
+                const query = $searchQuery.val().trim();
+                
+                if (!query) {
+                    $searchQuery.focus();
+                    return;
+                }
+
+                if (query.length < 2) {
+                    showError('Lütfen en az 2 karakter giriniz.');
+                    return;
+                }
+
+                setLoadingState(true);
+
+                try {
+                    const startTime = performance.now();
+                    const response = await fetch(CONFIG.API_BASE + encodeURIComponent(query), {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+
+                    const data = await response.json();
+                    const endTime = performance.now();
+                    
+                    // Add client-side timing
+                    if (data.aramaBilgisi) {
+                        data.aramaBilgisi.clientSuresiMs = Math.round(endTime - startTime);
+                    }
+
+                    if (data.basarili && data.veriler && data.veriler.length > 0) {
+                        updateToastData(data);
+                        initializeDataTable(data.veriler);
+                        resultToast.show();
+                    } else {
+                        const message = data.mesaj || 'Arama kriterlerinize uygun sonuç bulunamadı.';
+                        showError(message);
+                        
+                        if (dataTable) {
+                            dataTable.clear().draw();
+                        }
+                    }
+
+                } catch (error) {
+                    console.error('Search Error:', error);
+                    
+                    const isNetworkError = error.name === 'TypeError' || 
+                                         error.message.includes('fetch') ||
+                                         error.message.includes('network');
+                    
+                    showError(error.message, isNetworkError);
+                    
+                } finally {
+                    setLoadingState(false);
+                }
+            };
+
+            // Event Handlers
+            $btnSorgula.on('click', performSearch);
+            
+            $searchQuery.on('keypress', function(e) {
+                if (e.which === 13 && !isLoading) {
+                    performSearch();
+                }
+            });
+
+            // Real-time search suggestions (debounced)
+            $searchQuery.on('input', debounce(function() {
+                const query = $(this).val().trim();
+                if (query.length >= 3 && !isLoading) {
+                    // Could implement search suggestions here
+                }
+            }, CONFIG.SEARCH_DEBOUNCE));
+
+            // Enhanced focus management
+            $searchQuery.on('focus', function() {
+                $(this).parent().addClass('focused');
+            }).on('blur', function() {
+                $(this).parent().removeClass('focused');
+            });
+
+            // Theme Toggle (Future Enhancement)
+            $('#themeToggle').on('click', function() {
+                // Theme switching functionality can be implemented here
+                $(this).css('transform', 'rotate(360deg)');
+                setTimeout(() => {
+                    $(this).css('transform', 'rotate(0deg)');
+                }, 400);
+            });
+
+            // Keyboard Shortcuts
+            $(document).on('keydown', function(e) {
+                // Ctrl/Cmd + K to focus search
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    $searchQuery.focus();
+                }
+                
+                // Escape to clear search
+                if (e.key === 'Escape') {
+                    $searchQuery.val('').focus();
+                }
+            });
+
+            // Performance Monitoring
+            if ('performance' in window) {
+                window.addEventListener('load', function() {
+                    const loadTime = Math.round(performance.now());
+                    console.log(`🚀 Page loaded in ${loadTime}ms`);
+                });
+            }
+
+            // Initialize
+            $searchQuery.focus();
+            
+            // Add loading indicator for external resources
+            let resourcesLoaded = 0;
+            const totalResources = $('script[src], link[href]').length;
+            
+            $('script[src], link[href]').on('load error', function() {
+                resourcesLoaded++;
+                if (resourcesLoaded === totalResources) {
+                    $('body').addClass('resources-loaded');
+                }
+            });
+        });
     </script>
 </body>
 </html>
