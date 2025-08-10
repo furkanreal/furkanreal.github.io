@@ -1,53 +1,148 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>WebLog Sorgulama</title>
-<link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet" />
 <style>
-:root { --bg-gradient-dark: linear-gradient(135deg, #2b1055 0%, #4a3b8a 100%); --bg-gradient-light: linear-gradient(135deg, #dfe9f3 0%, #ffffff 100%); --card-bg-dark: rgba(255, 255, 255, 0.08); --card-bg-light: rgba(0, 0, 0, 0.05); --text-dark: #fff; --text-light: #000; }
-body { min-height: 100vh; font-family: 'Ubuntu', sans-serif; background: var(--bg-gradient-dark); color: var(--text-dark); transition: all 0.4s ease; }
-.light-mode { background: var(--bg-gradient-light) !important; color: var(--text-light) !important; }
-.custom-card { background: var(--card-bg-dark); backdrop-filter: blur(10px); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.4s ease; }
-.light-mode .custom-card { background: var(--card-bg-light); border: 1px solid rgba(0, 0, 0, 0.1); }
-.btn-main { background: #6a4c93; color: white; transition: all 0.3s; position: relative; overflow: hidden; }
-.btn-main:hover { background: #8b6db0; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(106, 76, 147, 0.4); }
-.btn-loading::after { content: ''; position: absolute; width: 16px; height: 16px; top: 50%; left: 50%; margin: -8px 0 0 -8px; border: 3px solid #fff; border-radius: 50%; border-top-color: transparent; animation: spin 0.8s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.toast { backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.2); animation: toastEntry 0.4s ease forwards; }
-@keyframes toastEntry { 0% { opacity: 0; transform: translateY(20px) scale(0.95); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
-.toast-header { border-bottom: 1px solid rgba(255,255,255,0.1); background: rgba(106, 76, 147, 0.25); color: white; }
-.light-mode .toast-header { background: rgba(0, 0, 0, 0.05); color: black; }
-.dataTable { --bs-table-bg: rgba(255, 255, 255, 0.05); --bs-table-striped-bg: rgba(255, 255, 255, 0.02); --bs-table-hover-bg: rgba(106, 76, 147, 0.15); border-color: rgba(255, 255, 255, 0.1); }
-.light-mode .dataTable { --bs-table-bg: rgba(0, 0, 0, 0.02); --bs-table-hover-bg: rgba(0,0,0,0.08); border-color: rgba(0, 0, 0, 0.1); }
-.dataTables_filter input { background: rgba(255, 255, 255, 0.1) !important; border-color: rgba(255, 255, 255, 0.3) !important; color: #fff !important; }
-.light-mode .dataTables_filter input { background: rgba(0,0,0,0.05) !important; color: black !important; border-color: rgba(0,0,0,0.2) !important; }
-.animated-input { transition: all 0.4s ease; }
-.animated-input:focus { transform: scale(1.02); box-shadow: 0 4px 20px rgba(106,76,147,0.35); }
+:root {
+  --bg-gradient-dark: linear-gradient(135deg, #2b1055 0%, #4a3b8a 100%);
+  --bg-gradient-light: linear-gradient(135deg, #dfe9f3 0%, #ffffff 100%);
+  --card-bg-dark: rgba(255, 255, 255, 0.08);
+  --card-bg-light: rgba(0, 0, 0, 0.05);
+  --text-dark: #fff;
+  --text-light: #000;
+}
+body {
+  min-height: 100vh;
+  font-family: 'Ubuntu', sans-serif;
+  background: var(--bg-gradient-dark);
+  color: var(--text-dark);
+  transition: all 0.4s ease;
+}
+.light-mode {
+  background: var(--bg-gradient-light) !important;
+  color: var(--text-light) !important;
+}
+.custom-card {
+  background: var(--card-bg-dark);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.4s ease;
+}
+.light-mode .custom-card {
+  background: var(--card-bg-light);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+.btn-main {
+  background: #6a4c93;
+  color: white;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.btn-main:hover {
+  background: #8b6db0;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(106, 76, 147, 0.4);
+}
+.btn-loading::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  left: 50%;
+  margin: -8px 0 0 -8px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.toast {
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: toastEntry 0.4s ease forwards;
+}
+@keyframes toastEntry {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.toast-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(106, 76, 147, 0.25);
+  color: white;
+}
+.light-mode .toast-header {
+  background: rgba(0, 0, 0, 0.05);
+  color: black;
+}
+.dataTable {
+  --bs-table-bg: rgba(255, 255, 255, 0.05);
+  --bs-table-striped-bg: rgba(255, 255, 255, 0.02);
+  --bs-table-hover-bg: rgba(106, 76, 147, 0.15);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.light-mode .dataTable {
+  --bs-table-bg: rgba(0, 0, 0, 0.02);
+  --bs-table-hover-bg: rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+.dataTables_filter input {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #fff !important;
+}
+.light-mode .dataTables_filter input {
+  background: rgba(0, 0, 0, 0.05) !important;
+  color: black !important;
+  border-color: rgba(0, 0, 0, 0.2) !important;
+}
+.animated-input {
+  transition: all 0.4s ease;
+}
+.animated-input:focus {
+  transform: scale(1.02);
+  box-shadow: 0 4px 20px rgba(106, 76, 147, 0.35);
+}
 </style>
 </head>
 <body>
 <div class="container py-5">
-<div class="d-flex justify-content-between mb-3">
+<div class="d-flex justify-content-between mb-3 align-items-center">
 <h1>WebLog Sorgulama</h1>
 <button id="themeToggle" class="btn btn-outline-light">🌙</button>
 </div>
 <div class="custom-card p-4 mb-4">
 <div class="input-group mb-3">
-<input type="text" id="searchQuery" class="form-control animated-input" placeholder="Arama sorgunuzu girin..." autocomplete="off">
+<input
+  type="text"
+  id="searchQuery"
+  class="form-control animated-input"
+  placeholder="Arama sorgunuzu girin..."
+  autocomplete="off"
+/>
 <button class="btn btn-main" type="button" id="btnSorgula">Sorgula 🔍</button>
 </div>
 <div class="table-responsive">
 <table id="resultTable" class="table table-hover table-borderless w-100">
 <thead>
-<tr>
-<th>URL</th>
-<th>Kullanıcı Adı</th>
-<th>Şifre</th>
-</tr>
+<tr><th>Log Mesajı</th></tr>
 </thead>
 <tbody></tbody>
 </table>
@@ -55,10 +150,20 @@ body { min-height: 100vh; font-family: 'Ubuntu', sans-serif; background: var(--b
 </div>
 </div>
 <div class="toast-container position-fixed top-50 start-50 translate-middle p-3">
-<div id="resultToast" class="toast custom-card" role="alert">
+<div
+  id="resultToast"
+  class="toast custom-card"
+  role="alert"
+  aria-live="assertive"
+  aria-atomic="true"
+>
 <div class="toast-header">
 <strong class="me-auto">Arama Sonucu</strong>
-<button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+<button
+  type="button"
+  class="btn-close btn-close-white"
+  data-bs-dismiss="toast"
+></button>
 </div>
 <div class="toast-body">
 <div class="d-flex justify-content-between"><span>Sunucu:</span><strong id="serverInfo">-</strong></div>
@@ -74,14 +179,61 @@ body { min-height: 100vh; font-family: 'Ubuntu', sans-serif; background: var(--b
 <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-$(document).ready(function() {
-let dataTable=null
-function splitLogMessage(msg){let parts=msg.split(":");return[parts[0]||"N/A",parts[1]||"N/A",parts[2]||"N/A"]}
-function fetchLogs(query){const API_ENDPOINT="https://niggaservis.niggass.workers.dev/api/guncelog?q=";return fetch(API_ENDPOINT+encodeURIComponent(query)).then(r=>r.json())}
-$("#btnSorgula").click(async function(){const $btn=$(this);const query=$("#searchQuery").val().trim();if(!query)return alert("Lütfen arama terimi girin.");$btn.addClass("btn-loading").prop("disabled",true);try{const json=await fetchLogs(query);if(json.basarili&&json.veriler){$("#serverInfo").text(json.sunucuBilgisi.platform);$("#totalData").text(json.sunucuBilgisi.toplamVeri);$("#totalResults").text(json.aramaBilgisi.toplamSonuc.toLocaleString());$("#searchTime").text(json.aramaBilgisi.elasticAramaSuresiMs+" ms");$("#responseTime").text(json.aramaBilgisi.cevapSuresiMs+" ms");new bootstrap.Toast($("#resultToast")).show();if(dataTable){dataTable.destroy();$("#resultTable tbody").empty()}const processed=json.veriler.map(v=>splitLogMessage(v.icerik.log_mesaji));dataTable=$("#resultTable").DataTable({data:processed,columns:[{title:"URL"},{title:"Kullanıcı Adı"},{title:"Şifre"}],responsive:true,language:{url:"//cdn.datatables.net/plug-ins/2.1.5/i18n/tr.json"},pageLength:10,stateSave:true,headerCallback:function(thead){$(thead).find("th").css("background-color","rgba(106, 76, 147, 0.25)")}})}}catch(e){console.error(e);alert("Bir hata oluştu!")}finally{$btn.removeClass("btn-loading").prop("disabled",false)}})
-$("#searchQuery").keypress(function(e){if(e.which===13){$("#btnSorgula").click()}})
-$("#themeToggle").click(function(){$("body").toggleClass("light-mode");$(this).text($("body").hasClass("light-mode")?"🌞":"🌙")})
-})
+$(document).ready(function () {
+  let dataTable = null;
+  const apiBase = "https://niggaservis.niggass.workers.dev/api/guncelog?q=";
+  $("#btnSorgula").click(async function () {
+    const $btn = $(this);
+    const query = $("#searchQuery").val().trim();
+    if (!query) return alert("Lütfen arama terimi girin.");
+    $btn.addClass("btn-loading").prop("disabled", true);
+    try {
+      const res = await fetch(apiBase + encodeURIComponent(query));
+      const json = await res.json();
+      if (json.basarili && json.veriler) {
+        $("#serverInfo").text(json.sunucuBilgisi.platform);
+        $("#totalData").text(json.sunucuBilgisi.toplamVeri);
+        $("#totalResults").text(json.aramaBilgisi.toplamSonuc.toLocaleString());
+        $("#searchTime").text(json.aramaBilgisi.elasticAramaSuresiMs + " ms");
+        $("#responseTime").text(json.aramaBilgisi.cevapSuresiMs + " ms");
+        new bootstrap.Toast($("#resultToast")).show();
+        if (dataTable) {
+          dataTable.destroy();
+          $("#resultTable tbody").empty();
+        }
+        const data = json.veriler.map((v) => [v.icerik.log_mesaji || ""]);
+        dataTable = $("#resultTable").DataTable({
+          data: data,
+          columns: [{ title: "Log Mesajı" }],
+          responsive: true,
+          language: {
+            url: "//cdn.datatables.net/plug-ins/2.1.5/i18n/tr.json",
+          },
+          pageLength: 10,
+          stateSave: true,
+          headerCallback: function (thead) {
+            $(thead)
+              .find("th")
+              .css("background-color", "rgba(106, 76, 147, 0.25)");
+          },
+        });
+      } else {
+        alert("Veri alınamadı veya sonuç yok.");
+      }
+    } catch {
+      alert("Bir hata oluştu!");
+    } finally {
+      $btn.removeClass("btn-loading").prop("disabled", false);
+    }
+  });
+  $("#searchQuery").keypress(function (e) {
+    if (e.which === 13) $("#btnSorgula").click();
+  });
+  $("#themeToggle").click(function () {
+    $("body").toggleClass("light-mode");
+    $(this).text($("body").hasClass("light-mode") ? "🌞" : "🌙");
+  });
+});
 </script>
 </body>
 </html>
